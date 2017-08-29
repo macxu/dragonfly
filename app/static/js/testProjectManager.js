@@ -56,7 +56,7 @@ TestProjectManager.prototype.loadTestClasses = function(callback) {
 
     var thisManager = this;
 
-    $.get('qacode/testfiles/' + thisManager.projectName, function(testClasses, status) {
+    $.get('api/test/definitions?project=' + thisManager.projectName, function(testClasses, status) {
 
         $.each(testClasses, function(lineIndex, testClassPath) {
 

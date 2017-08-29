@@ -1,5 +1,4 @@
 """Module for CPU related data parsing"""
-from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2016, Mac Xu <shinyxxn@hotmail.com>"
 __copyright__ = "Licensed under GPLv2 or later."
@@ -15,8 +14,10 @@ class Coder:
         self.codeRoot = root
         self.testsRoot = os.path.join(self.codeRoot, 'tests')
         self.testJsonPath = 'src/test/resources/com'
+        self.testClassPath = 'src/test/java/com'
 
         self.testJsonExtension = 'Tests.json'
+        self.testClassExtension = 'Test.java'
 
     def getTestProjects(self):
 
@@ -29,14 +30,25 @@ class Coder:
 
         return projectNames
 
+    def getTestClassFiles(self, testProjectName):
+
+        dirToScan = self.testsRoot + "/" + testProjectName + "/" + self.testClassPath
+
+        testClassFiles = []
+        for root, dirs, files in os.walk(dirToScan):
+            for file in files:
+                if (not file.endswith(self.testClassExtension)):
+                    continue
+                testClassFiles.append(os.path.join(root, file))
+
+        return testClassFiles
 
     def getTestJsonFiles(self, testProjectName):
 
-        testJsonPathToScan = self.testsRoot + "/" + testProjectName + "/" + self.testJsonPath
+        dirToScan = self.testsRoot + "/" + testProjectName + "/" + self.testJsonPath
 
         testFiles = []
-        for root, dirs, files in os.walk(testJsonPathToScan):
-            path = root.split(os.sep)
+        for root, dirs, files in os.walk(dirToScan):
             for file in files:
                 if (not file.endswith(self.testJsonExtension)):
                     continue
@@ -44,8 +56,19 @@ class Coder:
 
         return testFiles
 
+    def loadTestDefinitionsByProjectName(self, projectName):
 
-    def loadTests(self, testJsonFullPath):
+        testJsonFiles = self.getTestJsonFiles(projectName);
+
+        tests = [];
+        for testJsonFile in testJsonFiles:
+            testsByProject = self.loadTestDefinitionsByFilePath(testJsonFile)
+            tests += testsByProject
+
+        return tests
+
+
+    def loadTestDefinitionsByFilePath(self, testJsonFullPath):
 
         with open(testJsonFullPath) as data_file:
             jsonData = json.load(data_file)
@@ -62,8 +85,12 @@ if (__name__ == '__main__'):
     # testFiles = coder.getTestJsonFiles(project)
     # pprint.pprint(testFiles)
 
-    testJsonFile = '/Users/mxu/Workspace/qe/int/tests/qe-metadata-service-tests/src/test/resources/com/marin/qa/metadata/client/clientCreateTests.json'
-    testDefinitions = coder.loadTests(testJsonFile)
+    # testJsonFile = '/Users/mxu/Workspace/qe/int/tests/qe-metadata-service-tests/src/test/resources/com/marin/qa/metadata/client/clientCreateTests.json'
+    # testDefinitions = coder.loadTestDefinitionsByFilePath(testJsonFile)
+    # pprint.pprint(testDefinitions)
+
+    testProjectName = 'qe-metadata-service-tests'
+    testDefinitions = coder.loadTestDefinitionsByProjectName(testProjectName)
     pprint.pprint(testDefinitions)
 
 

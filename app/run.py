@@ -26,12 +26,22 @@ def getJobsByView():
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
 @app.route('/api/test/definitions')
 def getTestDefinitions():
-    testProjectName = request.args['project']
-    if (not testProjectName):
-        return jsonify({"error": "missing query arg of 'project'!"})
 
     coder = Coder()
-    return jsonify(coder.getTestJsonFiles())
+
+    if (request.args['project']):
+
+        return jsonify(coder.loadTestDefinitionsByProjectName(request.args['project']))
+
+    elif (request.args['file']):
+
+        return jsonify(coder.loadTestDefinitionsByFilePath(request.args['file']))
+
+    else:
+        return jsonify({"error": "'project' or 'file' must be specified in the query"})
+
+
+
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
