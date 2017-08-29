@@ -10,7 +10,7 @@ def index():
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
-@app.route('/jenkins/jobs')
+@app.route('/api/jenkins/jobs')
 def getJobsByView():
     viewUrl = request.args['view']
     if (not viewUrl):
