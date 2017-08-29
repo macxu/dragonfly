@@ -1,0 +1,43 @@
+
+.publisher_logo {
+  height: 30px;
+  width: 30px;
+}
+
+.build_result {
+  height: 30px;
+  width: 30px;
+}
+
+.logo {
+  height: 30px;
+  width: 30px;
+}
+
+.navbar-logo {
+  float: left;
+}
+
+.input-group-key {
+}
+
+.reserve-whitespaces {
+  white-space: pre;
+}
+
+.align-center {
+  align: center;
+}
+
+.div-invisible {
+  display: none;
+}
+
+.div-visible {
+  display: block;
+}
+
+.exportIcon {
+  height: 30px;
+  width: 30px;
+}

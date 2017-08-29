@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <title>Dragonfly | Marin Test Management System |</title>
+
+    <link href="/static/images/dragonfly-icon.png" rel="icon"><!-- Bootstrap Core CSS-->
+    <link href="/static/css/c3.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet"><!-- Custom CSS-->
+    <link href="/static/css/sb-admin.css" rel="stylesheet"><!-- Morris Charts CSS-->
+    <link href="/static/css/test-manager.css" rel="stylesheet"><!-- Custom Fonts-->
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries--><!-- WARNING: Respond.js doesn't work if you view the page via file://--><!--if lt IE 9script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!-- Morris Charts JavaScript--><!-- jQuery-->
+
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/d3.min.js"></script>
+    <script src="/static/js/c3.min.js"></script>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script src="/static/js/testProjectManager.js"></script>
+
+    <script>
+        function selectProject(projectName, projectInfo) {
+
+            $('#selectedProjectSpan').text(projectName + '\t\t');
+
+            var summaryTextElements = {};
+            summaryTextElements['caseCount'] = $('#textCaseCount');
+            summaryTextElements['checkpointCount'] = $('#textCheckpointCount');
+            summaryTextElements['jobCount'] = $('#textJobCount');
+            summaryTextElements['avarageCaseDuration'] = $('#textAverageCaseDuration');
+            summaryTextElements['additionalInfo'] = $('#textAdditionalInfo');
+
+            var testProjectManage = new TestProjectManager(projectName, 'tableBody', 'divPassRate', 'divSummary', summaryTextElements);
+            testProjectManage.load(function() {
+                console.log("all done");
+            });
+        }
+    </script>
+
+    <script>
+        $( document ).ready(function() {
+
+            var ulProjectElement = $('#ulProjects');
+            $.get('/qacode/testprojects', function(testProjects) {
+
+                $.each(testProjects, function(projectName, projectInfo) {
+
+                    if (projectName.includes('-')) {
+                        var liElement = $('<li></li>');
+                        ulProjectElement.append(liElement);
+
+                        liElement.click(function(p) {
+                           selectProject(projectName, projectInfo);
+                        });
+
+                        var aLink = $('<a></a>').text(projectName);
+                        liElement.append(aLink);
+                    }
+                });
+            });
+
+
+        });
+    </script>
+
+</head>
+
+<body>
+<div id="wrapper-wide">
+    <!-- Navigation-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display-->
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><img class="logo navbar-logo" src="/static/images/dragonfly-icon.png"><a class="navbar-brand" href="/">Dragonfly | Marin Test Management</a>
+        </div><!-- Top Menu Items-->
+
+
+        <ul class="nav navbar-right top-nav">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-user"></i> Shanghai QE<b class="caret"></b></a>
+                <div>
+
+                </div>
+
+            </li>
+        </ul>
+    </nav>
+    <div id="page-wrapper">
+        <div class="container-fluid" id="divContainer">
+            <!-- Page Heading-->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <ul class="nav navbar-left top-nav">
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="glyphicon glyphicon-th-list"></i>
+                                    <span id="selectedProjectSpan" class="reserve-whitespaces">Select a Test Project Here                                      </span>
+                                    <b class="caret"></b>
+                                </a>
+                                <ul id='ulProjects' class="dropdown-menu">
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="col-lg-4">
+                        <div id='divPassRate'>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div id="divSummary" class="panel panel-default div-invisible">
+                            <div class="panel-body">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Case Count</span>
+                                    <input id="textCaseCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
+                                </div>
+                                <br>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Checkpoint Count</span>
+                                    <input id="textCheckpointCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
+                                </div>
+                                <br>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Jenkins Job Count</span>
+                                    <input id="textJobCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
+                                </div>
+                                <br>
+                                <div class="input-group">
+                                    <span class="input-group-addon">Average Case Duration</span>
+                                    <input id="textAverageCaseDuration" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="'row">
+                <div class="'col-lg-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="align-center">Publisher</th>
+                                    <th class="align-center">VO</th>
+                                    <th class="align-center">Test Case</th>
+                                    <th class="align-center">Checkpoints</th>
+                                    <th class="align-center">Priority</th>
+                                    <th class="align-center">Status</th>
+                                    <th class="align-center">VM</th>
+                                    <th class="align-center">Branch</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
