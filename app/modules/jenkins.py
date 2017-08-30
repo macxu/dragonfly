@@ -57,11 +57,10 @@ class Jenkins:
     """
     def getTestCasesByBuild(self, buildUrl):
         reportUrl = buildUrl + 'testReport/'
-        testCases = self.getJenkinsJson(reportUrl)['suites']
+        testSuites = self.getJenkinsJson(reportUrl)['suites']
 
-        #set the testClass, testMehod and testCase
-
-        for testSuite in testCases:
+        testCases = []
+        for testSuite in testSuites:
             for testCase in testSuite['cases']:
                 #set testClass
                 className = testCase['className']
@@ -72,14 +71,16 @@ class Jenkins:
                 methodNameBracketIndex = methodName.rfind(' (')
                 if methodNameBracketIndex > -1:
                     serialMethodNameBracketIndex = methodName.rfind(')')
-                    testCase['testMethod']  = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
+                    testCase['testMethod'] = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
 
 
                 #set testCase
                 caseName = testCase['name']
                 if methodNameBracketIndex > -1:
                     serialCountClosingBracketIndex = caseName.find("] ");
-                    testCase["testCase"] = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
+                    testCase["name"] = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
+
+                testCases.append(testCase)
 
         return testCases
 
@@ -110,9 +111,11 @@ if (__name__ == '__main__'):
     # pprint.pprint(jobs)
 
     jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
-    buildNumber = jenkins.getLatestBuildNumber(jobUrl)
-    print(buildNumber)
+    # buildNumber = jenkins.getLatestBuildNumber(jobUrl)
+    # print(buildNumber)
+
+
     buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
     cases = jenkins.getTestCasesByBuild(buildUrl)
-    print(cases)
+    pprint.pprint(cases)
 
