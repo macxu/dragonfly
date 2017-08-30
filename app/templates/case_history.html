@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="dragonflyJenkinsApp">
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <title>Dragonfly | Test Management Portal </title>
+
+    <link href="/static/images/dragonfly-icon.png" rel="icon"><!-- Bootstrap Core CSS-->
+    <link href="/static/css/c3.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet"><!-- Custom CSS-->
+    <link href="/static/css/sb-admin.css" rel="stylesheet"><!-- Morris Charts CSS-->
+    <link href="/static/css/test-manager.css" rel="stylesheet"><!-- Custom Fonts-->
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries--><!-- WARNING: Respond.js doesn't work if you view the page via file://--><!--if lt IE 9script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!-- Morris Charts JavaScript--><!-- jQuery-->
+
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/d3.min.js"></script>
+    <script src="/static/js/c3.min.js"></script>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            loadChart();
+        });
+    </script>
+
+</head>
+
+<body ng-controller="dragonflyJenkinsController">
+<div id="wrapper-wide">
+    <!-- Navigation-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display-->
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><img class="logo navbar-logo" src="/static/images/dragonfly-icon.png"><a class="navbar-brand" href="/">Dragonfly | Test Management Portal</a>
+        </div><!-- Top Menu Items-->
+
+    </nav>
+    <div id="page-wrapper">
+        <div class="container-fluid" id="divContainer">
+            <!-- Page Heading-->
+
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">Test Case: Create a customer with default values</div>
+                                    <br>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-lg btn-success">R07</button>
+                                        <button type="button" class="btn btn-lg btn-success">R08</button>
+                                        <button type="button" class="btn btn-lg btn-success">R09</button>
+                                        <button type="button" class="btn btn-lg btn-success">R10</button>
+                                        <button type="button" class="btn btn-lg btn-danger">R11</button>
+                                        <button type="button" class="btn btn-lg btn-success">R12</button>
+                                        <br>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
+<script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
+
+<script>
+
+    function loadChart() {
+
+
+    }
+
+
+</script>
+
+</body>
+</html>
