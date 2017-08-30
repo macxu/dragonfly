@@ -10,7 +10,9 @@ class Rester:
 
     def __init__(self):
         pass
-    
+
+    """ Send rest request to get JSON, return the whole response as JSON or the sub-JSON by the specified key
+    """
     def getJson(self, url, propertyKey=''):
 
         response = requests.get(url)

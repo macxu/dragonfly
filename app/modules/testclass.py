@@ -1,11 +1,13 @@
 """Module for Java test class parsing"""
-from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import pprint
 
+""" Parser of a Java test class powered by JUnit
+    including the module, class name, test methods, test cases, test JSON files etc.
+"""
 class TestClasser:
 
     def __init__(self, javaFilePath):
