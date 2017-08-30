@@ -25,7 +25,8 @@ class Jenkins:
         If there is no build, return 0
     """
     def getLatestBuildNumber(self, jobUrl):
-        pass
+        jobData = self.getJenkinsJson(jobUrl)
+        return jobData['lastCompletedBuild']['number']
 
     """ Get the job configurations, including the git branch, environments etc.
     """
@@ -79,7 +80,11 @@ class Jenkins:
 if (__name__ == '__main__'):
     jenkins = Jenkins()
 
-    viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-    jobs = jenkins.getJobsOfView(viewUrl)
-    pprint.pprint(jobs)
+    # viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+    # jobs = jenkins.getJobsOfView(viewUrl)
+    # pprint.pprint(jobs)
+
+    jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
+    buildNumber = jenkins.getLatestBuildNumber(jobUrl)
+    print(buildNumber)
 
