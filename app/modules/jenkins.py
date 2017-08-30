@@ -53,6 +53,13 @@ class Jenkins:
     def getLatestBuildUrl(self, jobUrl):
         pass
 
+    """ Get the test case reports of the specified Jenkins view
+        It's the joint result of all the jobs of the view, with test case reports of the last build of each job
+    """
+    def getTestCasesByView(self, viewUrl):
+        pass
+
+
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):
@@ -62,19 +69,18 @@ class Jenkins:
         testCases = []
         for testSuite in testSuites:
             for testCase in testSuite['cases']:
-                #set testClass
+                # set testClass
                 className = testCase['className']
                 testCase['testClass'] = className.split('.')[-1]
 
-                #set testMethod
+                # set testMethod
                 methodName = testCase['name']
                 methodNameBracketIndex = methodName.rfind(' (')
                 if methodNameBracketIndex > -1:
                     serialMethodNameBracketIndex = methodName.rfind(')')
                     testCase['testMethod'] = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
 
-
-                #set testCase
+                # set testCase
                 caseName = testCase['name']
                 if methodNameBracketIndex > -1:
                     serialCountClosingBracketIndex = caseName.find("] ");
