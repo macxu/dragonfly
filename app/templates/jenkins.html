@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="dragonflyJenkins">
+<html lang="en" ng-app="dragonflyJenkinsApp">
 <head>
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta content="" name="description">
     <meta content="" name="author">
-    <title>Dragonfly | Test Management </title>
+    <title>Dragonfly | Test Management Portal </title>
 
     <link href="/static/images/dragonfly-icon.png" rel="icon"><!-- Bootstrap Core CSS-->
     <link href="/static/css/c3.min.css" rel="stylesheet">
@@ -23,9 +23,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     <script src="/static/js/bootstrap.min.js"></script>
 
-    <script src="/static/js/testProjectManager.js"></script>
-
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 
 </head>
 
@@ -35,7 +33,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display-->
         <div class="navbar-header">
-            <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><img class="logo navbar-logo" src="/static/images/dragonfly-icon.png"><a class="navbar-brand" href="/">Dragonfly | Test Management</a>
+            <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><img class="logo navbar-logo" src="/static/images/dragonfly-icon.png"><a class="navbar-brand" href="/">Dragonfly | Test Management Portal</a>
         </div><!-- Top Menu Items-->
 
     </nav>
@@ -50,26 +48,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                         </div>
                     </div>
                     <div class="col-lg-8">
-                        <div id="divSummary" class="panel panel-default div-invisible">
+                        <div id="divSummary" class="panel panel-default">
                             <div class="panel-body">
                                 <div class="input-group">
-                                    <span class="input-group-addon">Case Count</span>
-                                    <input id="textCaseCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
-                                </div>
-                                <br>
-                                <div class="input-group">
-                                    <span class="input-group-addon">Checkpoint Count</span>
-                                    <input id="textCheckpointCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
-                                </div>
-                                <br>
-                                <div class="input-group">
-                                    <span class="input-group-addon">Jenkins Job Count</span>
-                                    <input id="textJobCount" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
-                                </div>
-                                <br>
-                                <div class="input-group">
-                                    <span class="input-group-addon">Average Case Duration</span>
-                                    <input id="textAverageCaseDuration" type="text" class="form-control" placeholder="N/A" aria-describedby="sizing-addon2">
+                                    {[ firstName + " " + lastName + " - from " + project ]}
                                 </div>
                                 <br>
                             </div>
@@ -83,5 +65,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         </div>
     </div>
 </div>
+
+<script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
+<script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
+
 </body>
 </html>
