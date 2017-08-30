@@ -56,7 +56,32 @@ class Jenkins:
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):
-        pass
+        reportUrl = buildUrl + 'testReport/'
+        testCases = self.getJenkinsJson(reportUrl)['suites']
+
+        #set the testClass, testMehod and testCase
+
+        for testSuite in testCases:
+            for testCase in testSuite['cases']:
+                #set testClass
+                className = testCase['className']
+                testCase['testClass'] = className.split('.')[-1]
+
+                #set testMethod
+                methodName = testCase['name']
+                methodNameBracketIndex = methodName.rfind(' (')
+                if methodNameBracketIndex > -1:
+                    serialMethodNameBracketIndex = methodName.rfind(')')
+                    testCase['testMethod']  = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
+
+
+                #set testCase
+                caseName = testCase['name']
+                if methodNameBracketIndex > -1:
+                    serialCountClosingBracketIndex = caseName.find("] ");
+                    testCase["testCase"] = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
+
+        return testCases
 
     """ Get the API response of a specified Jenkins URL
         This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
@@ -87,4 +112,7 @@ if (__name__ == '__main__'):
     jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
     buildNumber = jenkins.getLatestBuildNumber(jobUrl)
     print(buildNumber)
+    buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
+    cases = jenkins.getTestCasesByBuild(buildUrl)
+    print(cases)
 
