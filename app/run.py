@@ -9,9 +9,9 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route('/index2')
-def index2():
-    return render_template("index2.html")
+@app.route('/jenkins')
+def jenkins():
+    return render_template("jenkins.html")
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
