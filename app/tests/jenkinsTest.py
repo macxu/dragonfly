@@ -1,5 +1,5 @@
 """Module for CPU related data parsing"""
-__author__    = "Copyright (c) 2016, Mac Xu <shinyxxn@hotmail.com>"
+__author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 

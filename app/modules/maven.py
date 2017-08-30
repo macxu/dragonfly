@@ -1,13 +1,13 @@
-"""Module for CPU related data parsing"""
+"""Module for project processing managed by Maven"""
 
-__author__    = "Copyright (c) 2016, Mac Xu <shinyxxn@hotmail.com>"
+__author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import os
 import pprint
 import json
 
-class Coder:
+class Mavener:
 
     def __init__(self, root = '/Users/mxu/Workspace/qe/int'):
 
@@ -19,6 +19,8 @@ class Coder:
         self.testJsonExtension = 'Tests.json'
         self.testClassExtension = 'Test.java'
 
+    """ Get the list of the test project names in the
+    """
     def getTestProjects(self):
 
         projectNames = []
@@ -58,7 +60,7 @@ class Coder:
 
     def loadTestDefinitionsByProjectName(self, projectName):
 
-        testJsonFiles = self.getTestJsonFiles(projectName);
+        testJsonFiles = self.getTestJsonFiles(projectName)
 
         tests = [];
         for testJsonFile in testJsonFiles:
@@ -78,7 +80,7 @@ class Coder:
 
 if (__name__ == '__main__'):
 
-    coder = Coder()
+    mavener = Mavener()
     # projects = coder.getTestProjects()
 
     # project = 'qe-metadata-service-tests'
@@ -90,7 +92,7 @@ if (__name__ == '__main__'):
     # pprint.pprint(testDefinitions)
 
     testProjectName = 'qe-metadata-service-tests'
-    testDefinitions = coder.loadTestDefinitionsByProjectName(testProjectName)
+    testDefinitions = mavener.loadTestDefinitionsByProjectName(testProjectName)
     pprint.pprint(testDefinitions)
 
 

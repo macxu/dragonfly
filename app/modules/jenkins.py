@@ -1,7 +1,8 @@
-"""Module for CPU related data parsing"""
+
+"""Module for Jenkins data parsing"""
 from app.modules.rester import Rester
 
-__author__    = "Copyright (c) 2016, Mac Xu <shinyxxn@hotmail.com>"
+__author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import pprint
@@ -9,38 +10,56 @@ import requests
 
 class Jenkins:
 
+    """ TODO: need a better way to specify the Jenkins server to make it good for general use """
     def __init__(self, server = 'http://ci.marinsw.net/'):
 
         self.server = server
         self.rester = Rester()
-    
+
+    """ Get the jobs of the specified Jenkins view URL  """
     def getJobsOfView(self, viewUrl):
         return self.getJenkinsJson(viewUrl, "jobs")
 
+    """ Get the latest build number of the specified Jenkins job URL
+        If the URL is not of a job, throw exception
+        If there is no build, return 0
+    """
     def getLatestBuildNumber(self, jobUrl):
         pass
 
+    """ Get the job configurations, including the git branch, environments etc.
+    """
     def getJobConfigs(self, jobUrl):
         pass
 
+    """ Tell if the specified Jenkins URL is of a view
+    """
     def isView(self, jenkinsUrl):
         return True
 
+    """ Tell if the specified Jenkins URL is of a job
+    """
     def isJob(self, jenkinsUrl):
         return True
 
+    """ Tell if the specified Jenkins URL is of a build
+    """
     def isBuild(self, jenkinsUrl):
         return True
 
+    """ Get the URL of the latest build of the specified Jenkins job
+    """
     def getLatestBuildUrl(self, jobUrl):
         pass
 
+    """ Get the test case reports of the specified Jenkins build
+    """
     def getTestCasesByBuild(self, buildUrl):
         pass
 
-    def report(self, testCases):
-        pass
-
+    """ Get the API response of a specified Jenkins URL
+        This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
+    """
     def getJenkinsJson(self, url, propertyKey=''):
         apiPostfix = 'api/json?pretty=true'
         if (not url.endswith(apiPostfix)):

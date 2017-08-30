@@ -1,13 +1,17 @@
 from flask import Flask, render_template, jsonify, request
 
 from app.modules.jenkins import Jenkins
-from app.modules.coder import Coder
+from app.modules.maven import Mavener
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route('/index2')
+def index2():
+    return render_template("index2.html")
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
@@ -27,15 +31,15 @@ def getJobsByView():
 @app.route('/api/test/definitions')
 def getTestDefinitions():
 
-    coder = Coder()
+    mavener = Mavener()
 
     if (request.args['project']):
 
-        return jsonify(coder.loadTestDefinitionsByProjectName(request.args['project']))
+        return jsonify(mavener.loadTestDefinitionsByProjectName(request.args['project']))
 
     elif (request.args['file']):
 
-        return jsonify(coder.loadTestDefinitionsByFilePath(request.args['file']))
+        return jsonify(mavener.loadTestDefinitionsByFilePath(request.args['file']))
 
     else:
         return jsonify({"error": "'project' or 'file' must be specified in the query"})
@@ -48,8 +52,8 @@ def getTestDefinitions():
 @app.route('/api/test/projects')
 def getTestProjects():
 
-    coder = Coder()
-    return jsonify(coder.getTestProjects())
+    mavener = Mavener()
+    return jsonify(mavener.getTestProjects())
 
 
 if __name__ == '__main__':

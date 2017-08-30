@@ -1,31 +1,29 @@
-"""Module for CPU related data parsing"""
-from app.modules.rester import Rester
+"""Module for a maven test project parsing"""
 
 __author__    = "Copyright (c) 2017, Mac Xu <shinyxxn@hotmail.com>"
 __copyright__ = "Licensed under GPLv2 or later."
 
-from app.modules.coder import Coder
+from app.modules.maven import Mavener
 
-import os
 import pprint
-import json
+
 
 class Projector:
 
     def __init__(self, projectName):
 
-        self.coder = Coder()
+        self.mavener = Mavener()
         self.project = projectName
 
     def getTestJsonFiles(self):
-        return self.coder.getTestJsonFiles(self.project)
+        return self.mavener.getTestJsonFiles(self.project)
 
-    def loadTestDefinitions(self):
-        testDefinitions = self.coder.loadTestDefinitionsByProjectName(self.project)
+    def getTestDefinitions(self):
+        testDefinitions = self.mavener.loadTestDefinitionsByProjectName(self.project)
 
 
-    def loadTestClassFiles(self):
-        testClassFiles = self.coder.getTestClassFiles(self.project)
+    def getTestClassFiles(self):
+        testClassFiles = self.mavener.getTestClassFiles(self.project)
         return testClassFiles
 
 
@@ -37,7 +35,7 @@ class Projector:
 if (__name__ == '__main__'):
 
     projector = Projector('qe-metadata-service-tests')
-    pprint.pprint(projector.loadTestClassFiles())
+    pprint.pprint(projector.getTestClassFiles())
 
 
 
