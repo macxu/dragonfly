@@ -51,20 +51,25 @@ class Jenkins:
     """ Get the URL of the latest build of the specified Jenkins job
     """
     def getLatestBuildUrl(self, jobUrl):
-        pass
+        return self.getJenkinsJson(jobUrl, 'builds')[0]["url"]
 
     """ Get the test case reports of the specified Jenkins view
         It's the joint result of all the jobs of the view, with test case reports of the last build of each job
     """
     def getTestCasesByView(self, viewUrl):
-        pass
+        jobs = self.getJobsOfView(viewUrl)
+        testCases = []
+        for job in jobs:
+            jobTestCases = self.getTestCasesByBuild(self.getLatestBuildUrl(job["url"]))
+            testCases.append(jobTestCases)
 
+        return testCases
 
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):
         reportUrl = buildUrl + 'testReport/'
-        testSuites = self.getJenkinsJson(reportUrl)['suites']
+        testSuites = self.getJenkinsJson(reportUrl, 'suites')
 
         testCases = []
         for testSuite in testSuites:
@@ -78,14 +83,17 @@ class Jenkins:
                 methodNameBracketIndex = methodName.rfind(' (')
                 if methodNameBracketIndex > -1:
                     serialMethodNameBracketIndex = methodName.rfind(')')
-                    testCase['testMethod'] = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
+                    methodName = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
+
+                testCase['testMethod'] = methodName
 
                 # set testCase
                 caseName = testCase['name']
                 if methodNameBracketIndex > -1:
-                    serialCountClosingBracketIndex = caseName.find("] ");
-                    testCase["name"] = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
+                    serialCountClosingBracketIndex = caseName.find("] ")
+                    caseName = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
 
+                testCase["name"] = caseName
                 testCases.append(testCase)
 
         return testCases
@@ -101,6 +109,8 @@ class Jenkins:
             url += apiPostfix
 
         response = requests.get(url)
+        if response.status_code != 200:
+            return {}
         jsonResponse = response.json()
 
         if (propertyKey == ''):
@@ -121,7 +131,11 @@ if (__name__ == '__main__'):
     # print(buildNumber)
 
 
-    buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
-    cases = jenkins.getTestCasesByBuild(buildUrl)
-    pprint.pprint(cases)
+    #buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
+    buildUrl='http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-bulk-bing-tests-qa2-release-011/1/'
+    #cases = jenkins.getTestCasesByBuild(buildUrl)
+    #pprint.pprint(cases)
 
+    viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+    cases = jenkins.getTestCasesByView(viewUrl)
+    pprint.pprint(cases)
