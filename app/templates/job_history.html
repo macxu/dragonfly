@@ -18,6 +18,8 @@
 script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!-- Morris Charts JavaScript--><!-- jQuery-->
 
     <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/d3.min.js"></script>
+    <script src="/static/js/c3.min.js"></script>
 
     <script src="/static/js/bootstrap.min.js"></script>
 
@@ -26,28 +28,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     <script>
         $(document).ready(function() {
-            $.get( "/api/jenkins/releases", function( responseData ) {
-
-                // xCategories is like this:
-                // ['Release 008','Release 009', 'Release 010', 'Release 011']
-                var xCategories = [];
-
-                var passed = [];
-                var failed = [];
-
-                for (var releaseName in responseData) {
-                  if (responseData.hasOwnProperty(releaseName)) {
-
-                    xCategories.push(releaseName);
-
-                    var releaseStat = responseData[releaseName];
-                    passed.push(releaseStat['passed']);
-                    failed.push(releaseStat['failed']);
-                  }
-                }
-
-                loadChart(xCategories, passed, failed);
-            });
+            loadChart();
         });
     </script>
 
@@ -72,7 +53,24 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <div id="divReleaseStat" style="height:600px;"></div>
+
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">Job: qe-metadataservice-api-tests-develop</div>
+                                    <br>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-lg btn-success">1</button>
+                                        <button type="button" class="btn btn-lg btn-success">2</button>
+                                        <button type="button" class="btn btn-lg btn-success">3</button>
+                                        <button type="button" class="btn btn-lg btn-success">4</button>
+                                        <button type="button" class="btn btn-lg btn-danger">5</button>
+                                        <button type="button" class="btn btn-lg btn-success">6</button>
+                                        <button type="button" class="btn btn-lg btn-success">7</button>
+                                        <button type="button" class="btn btn-lg btn-success">8</button>
+                                        <br>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -90,54 +88,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script>
 
-    function loadChart(xCategoriesArray, passedArray, failedArray) {
+    function loadChart() {
 
-        var myChart = echarts.init(document.getElementById('divReleaseStat'));
 
-        option = {
-            tooltip : {
-                trigger: 'axis',
-                axisPointer : {
-                    type : 'shadow'
-                }
-            },
-            legend: {
-                data:['Cases Passed','Cases Failed', "Cases Authored"]
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            xAxis : [
-                {
-                    type : 'category',
-                    data : xCategoriesArray
-                }
-            ],
-            yAxis : [
-                {
-                    type : 'value'
-                }
-            ],
-            series : [
-                {
-                    name:'Cases Passed',
-                    type:'bar',
-                    stack: 'executed',
-                    data: passedArray
-                },
-                {
-                    name:'Cases Failed',
-                    type:'bar',
-                    stack: 'executed',
-                    data:failedArray
-                }
-            ]
-        };
-
-        myChart.setOption(option);
     }
 
 

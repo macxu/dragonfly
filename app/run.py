@@ -13,9 +13,9 @@ def index():
 def jenkins():
     return render_template("jenkins.html")
 
-@app.route('/case')
-def caseHistory():
-    return render_template("case_history.html")
+@app.route('/job')
+def jobHistory():
+    return render_template("job_history.html")
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
@@ -30,6 +30,14 @@ def getJobsByView():
 
     return jsonify(jobs)
 
+
+@app.route('/api/jenkins/releases')
+def getJenkinsReleaseData():
+
+    jenkins = Jenkins()
+    testCaseStats = jenkins.getTestCaseCountForReleases()
+
+    return jsonify(testCaseStats)
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
 @app.route('/api/test/definitions')
