@@ -7,6 +7,8 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 import pprint
 import requests
+import xml.dom.minidom as elements
+from BeautifulSoup import BeautifulSoup
 
 class Jenkins:
 
@@ -30,12 +32,60 @@ class Jenkins:
 
     """ Get the job configurations, including the git branch, environments etc.
     """
+
     def getJobConfigs(self, jobUrl):
-        jobData = self.getJenkinsJson(jobUrl+"configure")
-        pass
+
+        if not jobUrl.endswith("/"):
+            jobUrl += "/"
+        jobUrl += "config.xml"
+
+        response = requests.get(jobUrl)
+
+        if response.status_code != 200:
+            return []
+        dom = elements.parseString(response.content).getElementsByTagName("targets")[0]
+        jobConfigString = dom.childNodes[0].nodeValue
+
+        # three nodes in jobConfigResults: -Dit.test; -Dmarin.env, -Dmarin.cluster & -DBRANCH_VERSION
+        return jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
+
+    """ Get the job configurations, including the git branch, environments etc. for develop branch,
+        which requires to specify the build version
+    """
+
+    def getJobConfigForDevelopBuild(self, developBuildUrl):
+        if not developBuildUrl.endswith("/"):
+            developBuildUrl += "/"
+
+        targetJobUrl = "/".join(developBuildUrl.split("/")[:-2]) + "/config.xml"
+
+        buildConfigParamUrl = developBuildUrl + "parameters/"
+
+        response = requests.get(targetJobUrl)
+        responseForParam = requests.get(buildConfigParamUrl)
+
+        if response.status_code != 200 or responseForParam.status_code != 200:
+            return []
+        dom = elements.parseString(response.content).getElementsByTagName("targets")[0]
+        jobConfigString = dom.childNodes[0].nodeValue
+
+        # three nodes in jobConfigResults: -Dit.test; -Dmarin.env & -DBRANCH_VERSION
+        jobConfigResults = jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
+
+        soup = BeautifulSoup(responseForParam.content)
+
+        parameters = soup.findAll('td', attrs={'class': "setting-name"})
+        for i, value in enumerate(jobConfigResults):
+            for parameter in parameters:
+                if value.find("=$" + parameter.string) != -1:
+                    jobConfigResults[i] = value.replace("$" + parameter.string, parameter.nextSibling.input["value"])
+                else:
+                    pass
+        return jobConfigResults
 
     """ Tell if the specified Jenkins URL is of a view
     """
+
     def isView(self, jenkinsUrl):
         if jenkinsUrl.find("view") > -1 and jenkinsUrl.find("job") == -1:
             return True
@@ -44,6 +94,7 @@ class Jenkins:
 
     """ Tell if the specified Jenkins URL is of a job
     """
+
     def isJob(self, jenkinsUrl):
         if "job" in jenkinsUrl:
             urlStringArray = jenkinsUrl.split("/")
@@ -54,6 +105,7 @@ class Jenkins:
 
     """ Tell if the specified Jenkins URL is of a build
     """
+
     def isBuild(self, jenkinsUrl):
         if "job" in jenkinsUrl:
             urlStringArray = jenkinsUrl.split("/")
@@ -61,7 +113,6 @@ class Jenkins:
             return (urlStringArray[1]).isdigit()
         else:
             return False
-
     """ Get the URL of the latest build of the specified Jenkins job
     """
     def getLatestBuildUrl(self, jobUrl):
@@ -183,5 +234,7 @@ if (__name__ == '__main__'):
     # cases = jenkins.getTestCasesByView(viewUrl)
     # pprint.pprint(cases)
 
+    developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
 
     print jenkins.getJobConfigs(jobUrl)
+    print jenkins.getJobConfigForDevelopBuild(developBuildUrl)
