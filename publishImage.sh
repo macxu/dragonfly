@@ -2,8 +2,8 @@
 
 #####  APP specific variables  #######
 DOCKER_USER=macxxn
-IMAGE_NAME=lepv
-IMAGE_TAG=flask
+IMAGE_NAME=dragonfly
+IMAGE_TAG=latest
 ######################################
 
 echo "Publishing image to Docker Hub: "${DOCKER_USER}/${IMAGE_NAME} with tag as ${IMAGE_TAG}
