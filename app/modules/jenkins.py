@@ -113,6 +113,18 @@ class Jenkins:
             return (urlStringArray[1]).isdigit()
         else:
             return False
+
+    """ Tell if the specified Jenkins URL is of a develop branch build
+    """
+    def isDevelopBranchBuild(self, jenkinsUrl):
+        if (self.isBuild(jenkinsUrl)):
+            urlStringArray = jenkinsUrl.split("/")
+            urlStringArray.reverse()
+            return urlStringArray[2].find("develop") != -1
+        else:
+            return False
+
+
     """ Get the URL of the latest build of the specified Jenkins job
     """
     def getLatestBuildUrl(self, jobUrl):
@@ -238,3 +250,6 @@ if (__name__ == '__main__'):
 
     print jenkins.getJobConfigs(jobUrl)
     print jenkins.getJobConfigForDevelopBuild(developBuildUrl)
+    print jenkins.isDevelopBranchBuild(jobUrl)
+    print jenkins.isDevelopBranchBuild(buildUrl)
+    print jenkins.isDevelopBranchBuild(developBuildUrl)
