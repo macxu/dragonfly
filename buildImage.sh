@@ -2,8 +2,8 @@
 
 #####  APP specific variables  #######
 DOCKER_USER=macxxn
-IMAGE_NAME=lepv
-IMAGE_TAG=flask
+IMAGE_NAME=dragonfly
+IMAGE_TAG=latest
 ######################################
 
 
