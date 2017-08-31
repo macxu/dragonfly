@@ -126,13 +126,23 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     name:'Cases Passed',
                     type:'bar',
                     stack: 'executed',
-                    data: passedArray
+                    data: passedArray,
+                    itemStyle: {
+                        normal: {
+                            color: 'green'
+                        }
+                    }
                 },
                 {
                     name:'Cases Failed',
                     type:'bar',
                     stack: 'executed',
-                    data:failedArray
+                    data:failedArray,
+                    itemStyle: {
+                        normal: {
+                            color: 'red'
+                        }
+                    },
                 }
             ]
         };
