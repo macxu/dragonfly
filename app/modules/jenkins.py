@@ -8,7 +8,7 @@ __copyright__ = "Licensed under GPLv2 or later."
 import pprint
 import requests
 import xml.dom.minidom as elements
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class Jenkins:
 
@@ -72,7 +72,7 @@ class Jenkins:
         # three nodes in jobConfigResults: -Dit.test; -Dmarin.env & -DBRANCH_VERSION
         jobConfigResults = jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
 
-        soup = BeautifulSoup(responseForParam.content)
+        soup = BeautifulSoup(responseForParam.content, "html.parser")
 
         parameters = soup.findAll('td', attrs={'class': "setting-name"})
         for i, value in enumerate(jobConfigResults):
@@ -248,8 +248,8 @@ if (__name__ == '__main__'):
 
     developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
 
-    print jenkins.getJobConfigs(jobUrl)
-    print jenkins.getJobConfigForDevelopBuild(developBuildUrl)
-    print jenkins.isDevelopBranchBuild(jobUrl)
-    print jenkins.isDevelopBranchBuild(buildUrl)
-    print jenkins.isDevelopBranchBuild(developBuildUrl)
+    print(jenkins.getJobConfigs(jobUrl))
+    print(jenkins.getJobConfigForDevelopBuild(developBuildUrl))
+    print(jenkins.isDevelopBranchBuild(jobUrl))
+    print(jenkins.isDevelopBranchBuild(buildUrl))
+    print(jenkins.isDevelopBranchBuild(developBuildUrl))
