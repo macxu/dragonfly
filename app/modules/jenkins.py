@@ -31,22 +31,36 @@ class Jenkins:
     """ Get the job configurations, including the git branch, environments etc.
     """
     def getJobConfigs(self, jobUrl):
+        jobData = self.getJenkinsJson(jobUrl+"configure")
         pass
 
     """ Tell if the specified Jenkins URL is of a view
     """
     def isView(self, jenkinsUrl):
-        return True
+        if jenkinsUrl.find("view") > -1 and jenkinsUrl.find("job") == -1:
+            return True
+        else:
+            return False
 
     """ Tell if the specified Jenkins URL is of a job
     """
     def isJob(self, jenkinsUrl):
-        return True
+        if "job" in jenkinsUrl:
+            urlStringArray = jenkinsUrl.split("/")
+            urlStringArray.reverse()
+            return not (urlStringArray[1]).isdigit()
+        else:
+            return False
 
     """ Tell if the specified Jenkins URL is of a build
     """
     def isBuild(self, jenkinsUrl):
-        return True
+        if "job" in jenkinsUrl:
+            urlStringArray = jenkinsUrl.split("/")
+            urlStringArray.reverse()
+            return (urlStringArray[1]).isdigit()
+        else:
+            return False
 
     """ Get the URL of the latest build of the specified Jenkins job
     """
@@ -137,5 +151,8 @@ if (__name__ == '__main__'):
     #pprint.pprint(cases)
 
     viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-    cases = jenkins.getTestCasesByView(viewUrl)
-    pprint.pprint(cases)
+    # cases = jenkins.getTestCasesByView(viewUrl)
+    # pprint.pprint(cases)
+
+
+    print jenkins.getJobConfigs(jobUrl)
