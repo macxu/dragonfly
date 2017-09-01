@@ -30,7 +30,9 @@ class Jenkins:
         jobData = self.getJenkinsJson(jobUrl)
         return jobData['lastCompletedBuild']['number']
 
-    """ Get the job configurations, including the git branch, environments etc.  """
+    """ Get the job configurations, including the git branch, environments etc.
+        The response data are organized as key value pairs
+    """
     def getJobConfigs(self, jobUrl):
 
         configUrl = urljoin(jobUrl, 'config.xml')
@@ -238,9 +240,9 @@ if (__name__ == '__main__'):
 
     developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
 
-    print(jenkins.getJobConfigs(jobUrl))
-    print(jenkins.getJobConfigForDevelopBuild(developBuildUrl))
-    print(jenkins.isDevelopBranchBuild(jobUrl))
-    print(jenkins.isDevelopBranchBuild(buildUrl))
-    print(jenkins.isDevelopBranchBuild(developBuildUrl))
-    print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
+    pprint.pprint(jenkins.getJobConfigs(jobUrl))
+    # print(jenkins.getJobConfigForDevelopBuild(developBuildUrl))
+    # print(jenkins.isDevelopBranchBuild(jobUrl))
+    # print(jenkins.isDevelopBranchBuild(buildUrl))
+    # print(jenkins.isDevelopBranchBuild(developBuildUrl))
+    # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
