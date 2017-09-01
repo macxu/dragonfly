@@ -7,7 +7,7 @@ IMAGE_TAG=latest
 
 CONTAINER_NAME=dragonfly
 CONTAINER_PORT=5000
-HOST_BIND_PORT=8877
+HOST_BIND_PORT=2906
 ######################################
 
 echo "running containers:"

@@ -58,8 +58,6 @@ def getTestDefinitions():
 
 
 
-
-
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
 @app.route('/api/test/projects')
 def getTestProjects():
@@ -68,5 +66,6 @@ def getTestProjects():
     return jsonify(mavener.getTestProjects())
 
 
+# NEED to set host='0.0.0.0' otherwise the service won't be reachable when running in a Docker container
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True, host='0.0.0.0', port=5000)

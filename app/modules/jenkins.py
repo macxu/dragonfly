@@ -9,6 +9,7 @@ import pprint
 import requests
 import xml.dom.minidom as elements
 from BeautifulSoup import BeautifulSoup
+from urllib.parse import urljoin
 
 class Jenkins:
 
@@ -30,16 +31,11 @@ class Jenkins:
         jobData = self.getJenkinsJson(jobUrl)
         return jobData['lastCompletedBuild']['number']
 
-    """ Get the job configurations, including the git branch, environments etc.
-    """
-
+    """ Get the job configurations, including the git branch, environments etc.  """
     def getJobConfigs(self, jobUrl):
 
-        if not jobUrl.endswith("/"):
-            jobUrl += "/"
-        jobUrl += "config.xml"
-
-        response = requests.get(jobUrl)
+        configUrl = urljoin(jobUrl, 'config.xml')
+        response = requests.get(configUrl)
 
         if response.status_code != 200:
             return []
@@ -49,10 +45,10 @@ class Jenkins:
         # three nodes in jobConfigResults: -Dit.test; -Dmarin.env, -Dmarin.cluster & -DBRANCH_VERSION
         return jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
 
+
     """ Get the job configurations, including the git branch, environments etc. for develop branch,
         which requires to specify the build version
     """
-
     def getJobConfigForDevelopBuild(self, developBuildUrl):
         if not developBuildUrl.endswith("/"):
             developBuildUrl += "/"
@@ -85,7 +81,6 @@ class Jenkins:
 
     """ Tell if the specified Jenkins URL is of a view
     """
-
     def isView(self, jenkinsUrl):
         if jenkinsUrl.find("view") > -1 and jenkinsUrl.find("job") == -1:
             return True
@@ -94,7 +89,6 @@ class Jenkins:
 
     """ Tell if the specified Jenkins URL is of a job
     """
-
     def isJob(self, jenkinsUrl):
         if "job" in jenkinsUrl:
             urlStringArray = jenkinsUrl.split("/")
@@ -105,7 +99,6 @@ class Jenkins:
 
     """ Tell if the specified Jenkins URL is of a build
     """
-
     def isBuild(self, jenkinsUrl):
         if "job" in jenkinsUrl:
             urlStringArray = jenkinsUrl.split("/")
@@ -174,7 +167,7 @@ class Jenkins:
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):
-        reportUrl = buildUrl + 'testReport/'
+        reportUrl = urljoin(buildUrl, 'testReport')
         testSuites = self.getJenkinsJson(reportUrl, 'suites')
 
         testCases = []
@@ -211,8 +204,7 @@ class Jenkins:
         apiPostfix = 'api/json?pretty=true'
         if (not url.endswith(apiPostfix)):
             if (not url.endswith('/')):
-                url += '/'
-            url += apiPostfix
+                url = urljoin(url, apiPostfix)
 
         response = requests.get(url)
         if response.status_code != 200:
@@ -248,8 +240,10 @@ if (__name__ == '__main__'):
 
     developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
 
-    print jenkins.getJobConfigs(jobUrl)
-    print jenkins.getJobConfigForDevelopBuild(developBuildUrl)
-    print jenkins.isDevelopBranchBuild(jobUrl)
-    print jenkins.isDevelopBranchBuild(buildUrl)
-    print jenkins.isDevelopBranchBuild(developBuildUrl)
+    print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
+
+    # print jenkins.getJobConfigs(jobUrl)
+    # print jenkins.getJobConfigForDevelopBuild(developBuildUrl)
+    # print jenkins.isDevelopBranchBuild(jobUrl)
+    # print jenkins.isDevelopBranchBuild(buildUrl)
+    # print jenkins.isDevelopBranchBuild(developBuildUrl)
