@@ -7,7 +7,7 @@ RUN mkdir /web/app
 
 ADD ./app /web/app/
 
-EXPOSE 5000
+EXPOSE 2906
 
 WORKDIR /web/app
 

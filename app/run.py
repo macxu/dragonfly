@@ -68,4 +68,4 @@ def getTestProjects():
 
 # NEED to set host='0.0.0.0' otherwise the service won't be reachable when running in a Docker container
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=2906)

@@ -130,20 +130,17 @@ class Jenkins:
         else:
             return False
 
-    """ Tell if the specified Jenkins URL is of a develop branch build
-    """
-    def isDevelopBranchBuild(self, jenkinsUrl):
-        if (self.isBuild(jenkinsUrl)):
-            urlStringArray = jenkinsUrl.split("/")
-            urlStringArray.reverse()
-            return urlStringArray[2].find("develop") != -1
-        else:
-            return False
-
 
     """ Get the URL of the latest build of the specified Jenkins job
     """
     def getLatestBuildUrl(self, jobUrl):
+        builds = self.getJenkinsJson(jobUrl, 'builds')
+        if (not builds):
+            return ''
+
+        if (len(builds) == 0):
+            return ''
+
         return self.getJenkinsJson(jobUrl, 'builds')[0]["url"]
 
     """ Get the test case reports of the specified Jenkins view
@@ -153,7 +150,17 @@ class Jenkins:
         jobs = self.getJobsOfView(viewUrl)
         testCases = []
         for job in jobs:
-            jobTestCases = self.getTestCasesByBuild(self.getLatestBuildUrl(job["url"]))
+            buildUrl = self.getLatestBuildUrl(job["url"])
+            if (not self.getLatestBuildUrl(job["url"])):
+                continue
+
+            jobTestCases = self.getTestCasesByBuild(buildUrl)
+            if (not jobTestCases):
+                continue
+
+            if (len(jobTestCases) == 0):
+                continue
+
             testCases.append(jobTestCases)
 
         return testCases
@@ -231,12 +238,17 @@ class Jenkins:
         response = requests.get(url)
         if response.status_code != 200:
             return {}
+
         jsonResponse = response.json()
 
         if (propertyKey == ''):
             return jsonResponse
-        else:
+
+        if (propertyKey in jsonResponse):
             return jsonResponse[propertyKey]
+
+        print(propertyKey + " is not a property of the response for url: " + url)
+        return {}
 
 
 if (__name__ == '__main__'):
@@ -263,9 +275,12 @@ if (__name__ == '__main__'):
     developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
     developJobUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/"
 
-    pprint.pprint(jenkins.getJobConfigs(developBuildUrl))
-    pprint.pprint(jenkins.getJobConfigs(jobUrl))
-
-    pprint.pprint(jenkins.getJobConfigs(buildUrl))
-    pprint.pprint(jenkins.getJobConfigs(developJobUrl))
+    # pprint.pprint(jenkins.getJobConfigs(developBuildUrl))
+    # pprint.pprint(jenkins.getJobConfigs(jobUrl))
+    #
+    # pprint.pprint(jenkins.getJobConfigs(buildUrl))
+    # pprint.pprint(jenkins.getJobConfigs(developJobUrl))
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
+
+    releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
+    pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
