@@ -14,9 +14,8 @@ from urllib.parse import urljoin
 class Jenkins:
 
     """ TODO: need a better way to specify the Jenkins server to make it good for general use """
-    def __init__(self, server = 'http://ci.marinsw.net/'):
+    def __init__(self):
 
-        self.server = server
         self.rester = Rester()
 
     """ Get the jobs of the specified Jenkins view URL  """
@@ -203,8 +202,7 @@ class Jenkins:
     def getJenkinsJson(self, url, propertyKey=''):
         apiPostfix = 'api/json?pretty=true'
         if (not url.endswith(apiPostfix)):
-            if (not url.endswith('/')):
-                url = urljoin(url, apiPostfix)
+            url = urljoin(url, apiPostfix)
 
         response = requests.get(url)
         if response.status_code != 200:
