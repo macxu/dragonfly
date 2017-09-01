@@ -33,52 +33,74 @@ class Jenkins:
     """ Get the job configurations, including the git branch, environments etc.
         The response data are organized as key value pairs
     """
-    def getJobConfigs(self, jobUrl):
+    def getJobConfigs(self, jobOrBuildUrl):
+        if not jobOrBuildUrl.endswith("/"):
+            jobOrBuildUrl += "/"
 
-        configUrl = urljoin(jobUrl, 'config.xml')
-        response = requests.get(configUrl)
+        if self.isBuild(jobOrBuildUrl):
+            targetUrl = "/".join(jobOrBuildUrl.split("/")[0:-2])
+            targetUrl += "/"
+        elif self.isJob(jobOrBuildUrl):
+            targetUrl = jobOrBuildUrl
+        else:
+            return {}
+
+        targetUrl += "config.xml"
+
+        response = requests.get(targetUrl)
 
         if response.status_code != 200:
-            return []
+            return {}
+
         dom = elements.parseString(response.content).getElementsByTagName("targets")[0]
         jobConfigString = dom.childNodes[0].nodeValue
 
-        # three nodes in jobConfigResults: -Dit.test; -Dmarin.env, -Dmarin.cluster & -DBRANCH_VERSION
-        return jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
+        resultConfig = {}
+        isRequireParamValue = False
 
+        for mvnCommandPart in jobConfigString.split("\n"):
+            if mvnCommandPart.startswith("-D"):
+                separator = mvnCommandPart.find("=")
+                resultConfig[mvnCommandPart[2:separator]] = mvnCommandPart[separator+1:]
+                isRequireParamValue = mvnCommandPart[separator+1:].startswith("$") or isRequireParamValue
+            else:
+                pass
+
+
+        if isRequireParamValue:
+            if self.isBuild(jobOrBuildUrl):
+                return self.__getBuildConfigParametersForGivenBuildUrl(jobOrBuildUrl, resultConfig)
+            elif self.isJob(jobOrBuildUrl):
+                return self.__getBuildConfigParametersForGivenBuildUrl(self.getLatestBuildUrl(jobOrBuildUrl), resultConfig)
+            else:
+                return {}
+
+        else:
+            return resultConfig
 
     """ Get the job configurations, including the git branch, environments etc. for develop branch,
-        which requires to specify the build version
+           which requires to specify the build version
     """
-    def getJobConfigForDevelopBuild(self, developBuildUrl):
-        if not developBuildUrl.endswith("/"):
-            developBuildUrl += "/"
+    def __getBuildConfigParametersForGivenBuildUrl(self, buildUrl, protoConfig):
 
-        targetJobUrl = "/".join(developBuildUrl.split("/")[:-2]) + "/config.xml"
+        if protoConfig.__len__() == 0:
+            return {}
 
-        buildConfigParamUrl = developBuildUrl + "parameters/"
+        if not buildUrl.endswith("/"):
+            buildUrl += "/"
+        buildUrl += "parameters/"
+        responseForParam = requests.get(buildUrl)
 
-        response = requests.get(targetJobUrl)
-        responseForParam = requests.get(buildConfigParamUrl)
-
-        if response.status_code != 200 or responseForParam.status_code != 200:
-            return []
-        dom = elements.parseString(response.content).getElementsByTagName("targets")[0]
-        jobConfigString = dom.childNodes[0].nodeValue
-
-        # three nodes in jobConfigResults: -Dit.test; -Dmarin.env & -DBRANCH_VERSION
-        jobConfigResults = jobConfigString[jobConfigString.find("-D"):jobConfigString.find("-U") - 1].split("\n")
+        if responseForParam.status_code != 200:
+            return {}
 
         soup = BeautifulSoup(responseForParam.content, "html.parser")
 
-        parameters = soup.findAll('td', attrs={'class': "setting-name"})
-        for i, value in enumerate(jobConfigResults):
-            for parameter in parameters:
-                if value.find("=$" + parameter.string) != -1:
-                    jobConfigResults[i] = value.replace("$" + parameter.string, parameter.nextSibling.input["value"])
-                else:
-                    pass
-        return jobConfigResults
+        for (propertyName, propertyValue) in protoConfig.items():
+            if propertyValue.startswith("$"):
+                protoConfig[propertyName] = soup.find('td', attrs={'class': "setting-name"}, text=propertyValue[1:]).nextSibling.input["value"]
+
+        return protoConfig
 
     """ Tell if the specified Jenkins URL is of a view
     """
@@ -239,10 +261,11 @@ if (__name__ == '__main__'):
     # pprint.pprint(cases)
 
     developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
+    developJobUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/"
 
+    pprint.pprint(jenkins.getJobConfigs(developBuildUrl))
     pprint.pprint(jenkins.getJobConfigs(jobUrl))
-    # print(jenkins.getJobConfigForDevelopBuild(developBuildUrl))
-    # print(jenkins.isDevelopBranchBuild(jobUrl))
-    # print(jenkins.isDevelopBranchBuild(buildUrl))
-    # print(jenkins.isDevelopBranchBuild(developBuildUrl))
+
+    pprint.pprint(jenkins.getJobConfigs(buildUrl))
+    pprint.pprint(jenkins.getJobConfigs(developJobUrl))
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
