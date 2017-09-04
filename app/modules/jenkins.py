@@ -148,8 +148,15 @@ class Jenkins:
     """
     def getTestCasesByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
+
+        jobsCount = len(jobs)
+        jobIndex = 0
+
         testCases = []
         for job in jobs:
+            jobIndex += 1
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + ": " + job["url"])
+
             buildUrl = self.getLatestBuildUrl(job["url"])
             if (not self.getLatestBuildUrl(job["url"])):
                 continue
@@ -161,9 +168,39 @@ class Jenkins:
             if (len(jobTestCases) == 0):
                 continue
 
-            testCases.append(jobTestCases)
+            testCases += jobTestCases
 
         return testCases
+
+    """ Report the test case stats of the specified Jenkins view
+            It's the joint result of all the jobs of the view, with test case reports of the last build of each job
+        """
+
+    def reportByView(self, viewUrl):
+
+        testCases = self.getTestCasesByView(viewUrl)
+
+        passedCount = 0
+        failedCount = 0
+        for testCase in testCases:
+
+            if (testCase['status'] == 'PASSED' or testCase['status'] == 'FIXED'):
+                passedCount += 1
+            elif (testCase['status'] == "FAILED"):
+                failedCount += 1
+            else:
+                print("unrecognized status: " + testCase['status'])
+
+        stats = {
+            "passed": passedCount,
+            "failed": failedCount,
+            "total": passedCount + failedCount
+        }
+
+        return stats
+
+
+
 
     """ Get the test case count history data for the recent releases
         Might need to cache the data in DB for frozen releases so we don't have to hit Jenkins for each requests.
@@ -190,6 +227,11 @@ class Jenkins:
         testCaseStats['Release 011'] = {
             "passed": 952,
             "failed": 155
+        }
+
+        testCaseStats['Release 012'] = {
+            "passed": 985,
+            "failed": 94
         }
 
         return testCaseStats
@@ -286,4 +328,4 @@ if (__name__ == '__main__'):
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
-    pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
+    pprint.pprint(jenkins.reportByView(releaseViewUrl))
