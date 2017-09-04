@@ -5,11 +5,23 @@ __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import requests
+import threading
 
-class Rester:
+class Rester(threading.Thread):
 
-    def __init__(self):
-        pass
+    def __init__(self, url = '', propertyKey = ''):
+        threading.Thread.__init__(self)
+
+        self.url = url
+        self.responseKey = propertyKey
+
+    """ Send rest request to get JSON, return the whole response as JSON or the sub-JSON by the specified key
+        This method is to be called in multi-threading
+    """
+    def run(self):
+
+        return self.getJson(self.url, self.responseKey)
+
 
     """ Send rest request to get JSON, return the whole response as JSON or the sub-JSON by the specified key
     """

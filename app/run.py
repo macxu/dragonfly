@@ -33,11 +33,27 @@ def getJobsByView():
 
 @app.route('/api/jenkins/releases')
 def getJenkinsReleaseData():
-
     jenkins = Jenkins()
-    testCaseStats = jenkins.getTestCaseCountForReleases()
 
-    return jsonify(testCaseStats)
+    releaseNumber = ''
+    if (not request.args.get('release')):
+        testCaseStats = jenkins.getTestCaseCountForReleases()
+        return jsonify(testCaseStats)
+    else:
+        releaseNumber = request.args.get('release')
+        viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
+
+        reports = []
+        reporters = jenkins.getReportersByView(viewUrl)
+        for reporter in reporters:
+            reports.append(reporter.getReport())
+
+        return jsonify(reports)
+
+
+
+
+
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
 @app.route('/api/test/definitions')

@@ -1,5 +1,6 @@
 
 """Module for Jenkins data parsing"""
+from app.modules.jenkinsJobReporter import JenkinsJobReporter
 from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software>"
@@ -155,7 +156,7 @@ class Jenkins:
         testCases = []
         for job in jobs:
             jobIndex += 1
-            print("[" + str(jobIndex) + "/" + str(jobsCount) + ": " + job["url"])
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job["url"])
 
             buildUrl = self.getLatestBuildUrl(job["url"])
             if (not self.getLatestBuildUrl(job["url"])):
@@ -172,6 +173,35 @@ class Jenkins:
 
         return testCases
 
+    """ Get the test case reports of the specified Jenkins view
+            It's the joint result of all the jobs of the view, with test case reports of the last build of each job
+        """
+
+    def getReportersByView(self, viewUrl):
+        jobs = self.getJobsOfView(viewUrl)
+
+        jobsCount = len(jobs)
+        jobIndex = 0
+
+        reporters = []
+        for job in jobs:
+            jobIndex += 1
+
+            if (jobIndex > 10):
+                break
+
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job["url"])
+
+            buildUrl = self.getLatestBuildUrl(job["url"])
+            if (not self.getLatestBuildUrl(job["url"])):
+                continue
+
+            reporter = self.getReporterByBuild(buildUrl)
+
+            reporters.append(reporter)
+
+        return reporters
+
     """ Report the test case stats of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
         """
@@ -182,19 +212,23 @@ class Jenkins:
 
         passedCount = 0
         failedCount = 0
+        skippedCount = 0
         for testCase in testCases:
 
             if (testCase['status'] == 'PASSED' or testCase['status'] == 'FIXED'):
                 passedCount += 1
             elif (testCase['status'] == "FAILED"):
                 failedCount += 1
+            elif (testCase['status'] == "SKIPPED"):
+                skippedCount += 1
             else:
                 print("unrecognized status: " + testCase['status'])
 
         stats = {
             "passed": passedCount,
             "failed": failedCount,
-            "total": passedCount + failedCount
+            "skipped": skippedCount,
+            "total": passedCount + failedCount + skippedCount
         }
 
         return stats
@@ -211,17 +245,20 @@ class Jenkins:
 
         testCaseStats['Release 008'] = {
             "passed": 892,
-            "failed": 116
+            "failed": 116,
+            "skipped": 0
         }
 
         testCaseStats['Release 009'] = {
             "passed": 927,
-            "failed": 88
+            "failed": 88,
+            "skipped": 0
         }
 
         testCaseStats['Release 010'] = {
             "passed": 653,
-            "failed": 456
+            "failed": 456,
+            "skipped": 0
         }
 
         testCaseStats['Release 011'] = {
@@ -231,7 +268,8 @@ class Jenkins:
 
         testCaseStats['Release 012'] = {
             "passed": 985,
-            "failed": 94
+            "failed": 94,
+            "skipped": 0
         }
 
         return testCaseStats
@@ -239,6 +277,15 @@ class Jenkins:
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):
+
+        reporter = self.getReporterByBuild(buildUrl)
+
+        return reporter.getAllCases()
+
+    """ Get the test case reports of the specified Jenkins build
+        """
+
+    def getReporterByBuild(self, buildUrl):
         reportUrl = urljoin(buildUrl, 'testReport')
         testSuites = self.getJenkinsJson(reportUrl, 'suites')
 
@@ -254,7 +301,7 @@ class Jenkins:
                 methodNameBracketIndex = methodName.rfind(' (')
                 if methodNameBracketIndex > -1:
                     serialMethodNameBracketIndex = methodName.rfind(')')
-                    methodName = methodName[methodNameBracketIndex+2 : serialMethodNameBracketIndex]
+                    methodName = methodName[methodNameBracketIndex + 2: serialMethodNameBracketIndex]
 
                 testCase['testMethod'] = methodName
 
@@ -262,13 +309,22 @@ class Jenkins:
                 caseName = testCase['name']
                 if methodNameBracketIndex > -1:
                     serialCountClosingBracketIndex = caseName.find("] ")
-                    caseName = caseName[serialCountClosingBracketIndex+2 : methodNameBracketIndex]
+                    caseName = caseName[serialCountClosingBracketIndex + 2: methodNameBracketIndex]
 
                 testCase["name"] = caseName
                 testCases.append(testCase)
 
-        print("done getting cases for " + buildUrl)
-        return testCases
+        print("        done getting cases for " + buildUrl)
+        reporter = JenkinsJobReporter()
+        reporter.latestBuildUrl = buildUrl
+        reporter.setCases(testCases)
+
+        return reporter
+
+    def getJobShortName(self, jenkinsUrl):
+        # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
+        # to:   bulk-bing-sync
+        pass
 
     """ Get the API response of a specified Jenkins URL
         This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
@@ -328,4 +384,7 @@ if (__name__ == '__main__'):
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
-    pprint.pprint(jenkins.reportByView(releaseViewUrl))
+    reporters = jenkins.getReportersByView(releaseViewUrl)
+    for reporter in reporters:
+        pprint.pprint(reporter.getPassCount())
+    # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
