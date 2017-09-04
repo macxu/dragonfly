@@ -11,6 +11,7 @@ import requests
 import xml.dom.minidom as elements
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import re
 
 class Jenkins:
 
@@ -187,7 +188,7 @@ class Jenkins:
         for job in jobs:
             jobIndex += 1
 
-            if (jobIndex > 10):
+            if (jobIndex > 20):
                 break
 
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job["url"])
@@ -317,6 +318,7 @@ class Jenkins:
         print("        done getting cases for " + buildUrl)
         reporter = JenkinsJobReporter()
         reporter.latestBuildUrl = buildUrl
+        reporter.jobShortName = self.getJobShortName(buildUrl)
         reporter.setCases(testCases)
 
         return reporter
@@ -324,7 +326,18 @@ class Jenkins:
     def getJobShortName(self, jenkinsUrl):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
         # to:   bulk-bing-sync
-        pass
+        matchObj = re.match(r'.*/job/(.*)/.*', jenkinsUrl, re.M | re.I)
+
+        if (not matchObj):
+            return ''
+
+        jobName = matchObj.group(1)
+        matchObj = re.match(r'.*qe-(.*)-tests-.*', jenkinsUrl, re.M | re.I)
+
+        if (not matchObj):
+            return ''
+
+        return matchObj.group(1)
 
     """ Get the API response of a specified Jenkins URL
         This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
@@ -354,6 +367,9 @@ class Jenkins:
 
 if (__name__ == '__main__'):
     jenkins = Jenkins()
+
+    url = 'http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1'
+    print(jenkins.getJobShortName(url))
 
     # viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
     # jobs = jenkins.getJobsOfView(viewUrl)

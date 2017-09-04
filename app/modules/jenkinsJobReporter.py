@@ -10,6 +10,7 @@ class JenkinsJobReporter:
 
     def __init__(self, ):
         self.jobUrl = ''
+        self.jobShortName = ''
         self.latestBuildUrl = ''
         self.latestBuildNumber = 0
 
@@ -33,6 +34,7 @@ class JenkinsJobReporter:
         report['cases']['skipped'] += self.casesSkipped
 
         report['build'] = self.latestBuildUrl
+        report['job'] = self.jobShortName
 
         return report
 

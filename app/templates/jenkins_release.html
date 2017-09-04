@@ -53,14 +53,12 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <div id="divReleaseStat" style="height:600px;"></div>
+                                <div id="divReleaseStat" style="height:1200px;"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
 
         </div>
     </div>
@@ -80,7 +78,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         for (var i = 0; i < reports.length; i++ ) {
             report = reports[i];
 
-            jobNames.push(report['build'])
+            jobNames.push(report['job'])
 
             passedCaseCountArray.push(report['cases']['passed'].length);
             failedcaseCountArray.push(report['cases']['failed'].length);
