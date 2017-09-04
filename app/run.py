@@ -11,7 +11,11 @@ def index():
 
 @app.route('/jenkins')
 def jenkins():
-    return render_template("jenkins.html")
+    if (not request.args.get('release')):
+        return render_template("jenkins.html")
+    else:
+        return render_template("jenkins_release.html")
+
 
 @app.route('/job')
 def jobHistory():
