@@ -225,6 +225,7 @@ class Jenkins:
                 testCase["name"] = caseName
                 testCases.append(testCase)
 
+        print("done getting cases for " + buildUrl)
         return testCases
 
     """ Get the API response of a specified Jenkins URL
@@ -233,7 +234,9 @@ class Jenkins:
     def getJenkinsJson(self, url, propertyKey=''):
         apiPostfix = 'api/json?pretty=true'
         if (not url.endswith(apiPostfix)):
-            url = urljoin(url, apiPostfix)
+            if (not url.endswith('/')):
+                url += '/'
+            url += apiPostfix
 
         response = requests.get(url)
         if response.status_code != 200:
@@ -247,7 +250,7 @@ class Jenkins:
         if (propertyKey in jsonResponse):
             return jsonResponse[propertyKey]
 
-        print(propertyKey + " is not a property of the response for url: " + url)
+        print("'" + propertyKey + "' is not a property of the response for url: " + url)
         return {}
 
 
