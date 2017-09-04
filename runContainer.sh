@@ -6,7 +6,7 @@ IMAGE_NAME=dragonfly
 IMAGE_TAG=latest
 
 CONTAINER_NAME=dragonfly
-CONTAINER_PORT=5000
+CONTAINER_PORT=2906
 HOST_BIND_PORT=2906
 ######################################
 
