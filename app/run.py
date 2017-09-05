@@ -39,13 +39,13 @@ def getJobsByView():
 def getJenkinsReleaseData():
     jenkins = Jenkins()
 
-    releaseNumber = ''
     if (not request.args.get('release')):
         testCaseStats = jenkins.getTestCaseCountForReleases()
         return jsonify(testCaseStats)
     else:
         releaseNumber = request.args.get('release')
-        viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
+        viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/' + releaseNumber + '/view/Tests/'
+        print("view URL: " + viewUrl)
 
         reports = []
         reporters = jenkins.getReportersByView(viewUrl)
@@ -53,9 +53,6 @@ def getJenkinsReleaseData():
             reports.append(reporter.getReport())
 
         return jsonify(reports)
-
-
-
 
 
 

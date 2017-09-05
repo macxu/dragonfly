@@ -147,6 +147,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             ]
         };
 
+        myChart.on('click', function (params) {
+           window.open('/jenkins?release=' + params.name, '_blank');
+        });
+
         myChart.setOption(option);
     }
 

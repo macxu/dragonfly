@@ -7,6 +7,7 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 import threading
 import re
+import pprint
 from urllib.parse import urljoin
 
 
@@ -42,8 +43,6 @@ class JenkinsJobReporter(threading.Thread):
             return
 
 
-
-
     def getTestCasesInfo(self):
         reportUrl = urljoin(self.latestBuildUrl, 'testReport')
         testSuites = self.getJenkinsJson(reportUrl, 'suites')
@@ -73,12 +72,13 @@ class JenkinsJobReporter(threading.Thread):
 
                 if (testCase['status'] == 'PASSED' or testCase['status'] == 'FIXED'):
                     self.casesPassed.append(testCase)
-                elif (testCase['status'] == "FAILED"):
+                elif (testCase['status'] == "FAILED" or testCase['status'] == 'REGRESSION'):
                     self.casesFailed.append(testCase)
                 elif (testCase['status'] == "SKIPPED"):
                     self.casesSkipped.append(testCase)
                 else:
                     print("unrecognized status: " + testCase['status'])
+                    pprint.pprint(self.jobUrl)
 
 
     def getJenkinsApiUrl(self, url):

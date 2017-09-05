@@ -301,30 +301,30 @@ class Jenkins:
 
         testCaseStats = {}
 
-        testCaseStats['Release 008'] = {
+        testCaseStats['release-008'] = {
             "passed": 892,
             "failed": 116,
             "skipped": 0
         }
 
-        testCaseStats['Release 009'] = {
+        testCaseStats['release-009'] = {
             "passed": 927,
             "failed": 88,
             "skipped": 0
         }
 
-        testCaseStats['Release 010'] = {
+        testCaseStats['release-010'] = {
             "passed": 653,
             "failed": 456,
             "skipped": 0
         }
 
-        testCaseStats['Release 011'] = {
+        testCaseStats['release-011'] = {
             "passed": 952,
             "failed": 155
         }
 
-        testCaseStats['Release 012'] = {
+        testCaseStats['release-012-qa2'] = {
             "passed": 985,
             "failed": 94,
             "skipped": 0

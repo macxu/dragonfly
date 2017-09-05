@@ -26,10 +26,28 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     <script>
         $(document).ready(function() {
-            $.get( "/api/jenkins/releases?release=r12", function( reports ) {
+            var releaseNumber = getUrlParameter('release');
+            $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
                 loadChart(reports);
             });
         });
+    </script>
+
+    <script>
+        function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+        };
     </script>
 
 </head>
