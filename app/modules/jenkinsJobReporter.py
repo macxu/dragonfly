@@ -6,6 +6,7 @@ __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import threading
+import re
 from urllib.parse import urljoin
 
 
@@ -16,7 +17,7 @@ class JenkinsJobReporter(threading.Thread):
 
         self.jobUrl = jobUrl
 
-        self.jobShortName = ''
+        self.jobShortName = jobUrl
         self.latestBuildUrl = ''
         self.latestBuildNumber = 0
 
@@ -27,9 +28,18 @@ class JenkinsJobReporter(threading.Thread):
         self.rester = Rester()
 
     def run(self):
+        self.getJobShortName()
         self.getLatestBuildInfo()
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
+
+    def getJobShortName(self):
+        # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
+        # to:   bulk-bing-sync
+        matchObj = re.match(r'.*/job/qe-(.*)-tests-.*', self.jobUrl, re.M | re.I)
+        if (matchObj):
+            self.jobShortName = matchObj.group(1)
+
 
     def getTestCasesInfo(self):
         reportUrl = urljoin(self.latestBuildUrl, 'testReport')
