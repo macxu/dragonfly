@@ -26,10 +26,28 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     <script>
         $(document).ready(function() {
-            $.get( "/api/jenkins/releases?release=r12", function( reports ) {
+            var releaseNumber = getUrlParameter('release');
+            $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
                 loadChart(reports);
             });
         });
+    </script>
+
+    <script>
+        function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+        };
     </script>
 
 </head>
@@ -44,20 +62,12 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         </div><!-- Top Menu Items-->
 
     </nav>
+
     <div id="page-wrapper">
-        <div class="container-fluid" id="divContainer">
+        <div class="container-fluid">
             <!-- Page Heading-->
 
-            <div class="row">
-                <div class="panel panel-default">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div id="divReleaseStat" style="height:1200px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="container" id="divReleaseStat" style="height: 100%; min-height:2000px">
             </div>
 
         </div>
@@ -78,53 +88,49 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         for (var i = 0; i < reports.length; i++ ) {
             report = reports[i];
 
-            jobNames.push(report['job'])
+            jobNames.unshift(report['job'])
 
-            passedCaseCountArray.push(report['cases']['passed'].length);
-            failedcaseCountArray.push(report['cases']['failed'].length);
+            passedCaseCountArray.unshift(report['cases']['passed'].length);
+            failedcaseCountArray.unshift(report['cases']['failed'].length);
 
         }
 
         var myChart = echarts.init(document.getElementById('divReleaseStat'));
 
         option = {
-            title : {
-                text: 'Release Stats',
-                subtext: 'for r12'
-            },
             tooltip : {
-                trigger: 'axis'
+                trigger: 'axis',
+                axisPointer : {
+                    type : 'shadow'
+                }
             },
             legend: {
-                data:['Passed', 'Failed']
+                data: ['Cases Passed', 'Cases Failed']
             },
-            toolbox: {
-                show : true,
-                feature : {
-                    mark : {show: true},
-                    dataView : {show: true, readOnly: false},
-                    magicType: {show: true, type: ['line', 'bar']},
-                    restore : {show: true},
-                    saveAsImage : {show: true}
-                }
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
             },
-            calculable : true,
-            xAxis : [
+            xAxis:  {
+                type: 'value'
+            },
+            yAxis: {
+                type: 'category',
+                data: jobNames
+            },
+            series: [
                 {
-                    type : 'value',
-                    boundaryGap : [0, 0.01]
-                }
-            ],
-            yAxis : [
-                {
-                    type : 'category',
-                    data : jobNames
-                }
-            ],
-            series : [
-                {
-                    name:'Passed',
-                    type:'bar',
+                    name: 'Cases Passed',
+                    type: 'bar',
+                    stack: 'Cases Executed',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inside'
+                        }
+                    },
                     data: passedCaseCountArray,
                     itemStyle: {
                         normal: {
@@ -133,8 +139,15 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     }
                 },
                 {
-                    name:'Failed',
-                    type:'bar',
+                    name: 'Cases Failed',
+                    type: 'bar',
+                    stack: 'Cases Executed',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inside'
+                        }
+                    },
                     data: failedcaseCountArray,
                     itemStyle: {
                         normal: {
@@ -144,6 +157,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 }
             ]
         };
+
+        myChart.on('click', function (params) {
+           console.log(params.name);
+        });
 
         myChart.setOption(option);
     }
