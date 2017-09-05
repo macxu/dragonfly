@@ -182,6 +182,30 @@ class Jenkins:
         return builds
 
 
+    """ Get the Jobs difference between two view
+        first parameter is the old viewurl
+        second parameter is the new viewurl
+    """
+    def getDifferenceBetweenViews(self, oldViewUrl, newViewUrl):
+        oldJobs = self.getJobsOfView(oldViewUrl)
+        newJobs = self.getJobsOfView(newViewUrl)
+        jobNameDictionary = {}
+        sameJobs = []
+        for job in oldJobs:
+            if job:
+                jobNameDictionary[self.getJobShortName(job['url'])]=job
+        for job in newJobs:
+            jobName = self.getJobShortName(job['url'])
+            if job and jobName in jobNameDictionary.keys():
+                sameJobs.append((jobNameDictionary.get(jobName), job))
+        deletedJobs = [ job for job in oldJobs if job not in [ jobTurple[0] for jobTurple in sameJobs ]]
+        pprint.pprint(deletedJobs)
+        addedJobs = [ job for job in newJobs if job not in [ jobTurple[1] for jobTurple in sameJobs ]]
+        pprint.pprint(addedJobs)
+
+
+
+
     """ Get the test case reports of the specified Jenkins view
         It's the joint result of all the jobs of the view, with test case reports of the last build of each job
     """
@@ -458,11 +482,14 @@ if (__name__ == '__main__'):
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
+    releaseViewUrlOld = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
 
+    jobs = jenkins.getDifferenceBetweenViews(releaseViewUrlOld,releaseViewUrl)
+    pprint.pprint(jobs)
     # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
 
-    reporters = jenkins.getReportersByView(releaseViewUrl)
+   # reporters = jenkins.getReportersByView(releaseViewUrl)
 
-    for reporter in reporters:
-        pprint.pprint(reporter.getReport())
+    #for reporter in reporters:
+    #    pprint.pprint(reporter.getReport())
     # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
