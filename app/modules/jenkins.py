@@ -174,10 +174,19 @@ class Jenkins:
 
         return testCases
 
+    """ Sort the reporters, default is to sort by the number of test cases being executed, desc
+        Ordering:
+        1. number of total test cases being executed, desc
+        2. number of passed cases, desc 
+    """
+    def sortReporters(self, reporters):
+
+        return reporters
+
+
     """ Get the test case reports of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
         """
-
     def getReportersByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
 
@@ -198,15 +207,14 @@ class Jenkins:
                 continue
 
             reporter = self.getReporterByBuild(buildUrl)
-
             reporters.append(reporter)
 
-        return reporters
+        orderedReporters = self.sortReporters(reporters)
+        return orderedReporters
 
     """ Report the test case stats of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
         """
-
     def reportByView(self, viewUrl):
 
         testCases = self.getTestCasesByView(viewUrl)
@@ -368,9 +376,6 @@ class Jenkins:
 if (__name__ == '__main__'):
     jenkins = Jenkins()
 
-    url = 'http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1'
-    print(jenkins.getJobShortName(url))
-
     # viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
     # jobs = jenkins.getJobsOfView(viewUrl)
     # pprint.pprint(jobs)
@@ -402,5 +407,5 @@ if (__name__ == '__main__'):
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
     reporters = jenkins.getReportersByView(releaseViewUrl)
     for reporter in reporters:
-        pprint.pprint(reporter.getPassCount())
+        pprint.pprint(reporter.getReport())
     # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
