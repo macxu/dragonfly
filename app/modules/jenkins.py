@@ -180,7 +180,7 @@ class Jenkins:
         2. number of passed cases, desc 
     """
     def sortReporters(self, reporters):
-
+        reporters = sorted(reporters, key = lambda k: (len(k.cases), len(k.casesPassed)), reverse=True)
         return reporters
 
 
@@ -406,6 +406,7 @@ if (__name__ == '__main__'):
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
     reporters = jenkins.getReportersByView(releaseViewUrl)
+
     for reporter in reporters:
         pprint.pprint(reporter.getReport())
     # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
