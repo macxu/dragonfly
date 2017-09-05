@@ -83,7 +83,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
         jobNames = [];
         passedCaseCountArray = [];
-        failedcaseCountArray = [];
+        failedCaseCountArray = [];
 
         for (var i = 0; i < reports.length; i++ ) {
             report = reports[i];
@@ -91,7 +91,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             jobNames.unshift(report['job'])
 
             passedCaseCountArray.unshift(report['cases']['passed'].length);
-            failedcaseCountArray.unshift(report['cases']['failed'].length);
+            failedCaseCountArray.unshift(report['cases']['failed'].length);
 
         }
 
@@ -148,7 +148,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                             position: 'inside'
                         }
                     },
-                    data: failedcaseCountArray,
+                    data: failedCaseCountArray,
                     itemStyle: {
                         normal: {
                             color: 'red'

@@ -18,6 +18,8 @@ class JenkinsJobReporter(threading.Thread):
 
         self.jobUrl = jobUrl
 
+        self.viewUrl = ''
+
         self.jobShortName = jobUrl
         self.latestBuildUrl = ''
         self.latestBuildNumber = 0
@@ -33,6 +35,9 @@ class JenkinsJobReporter(threading.Thread):
         self.getLatestBuildInfo()
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
+
+    def setViewUrl(self, viewUrl):
+        self.viewUrl = viewUrl
 
     def getJobShortName(self):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
@@ -122,6 +127,7 @@ class JenkinsJobReporter(threading.Thread):
 
         report['build'] = self.latestBuildUrl
         report['job'] = self.jobShortName
+        report['view'] = self.viewUrl
 
         return report
 

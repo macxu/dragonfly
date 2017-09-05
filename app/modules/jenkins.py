@@ -252,6 +252,7 @@ class Jenkins:
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
 
             reporter = JenkinsJobReporter(jobUrl)
+            reporter.setViewUrl(viewUrl)
             reporter.start()
             reporters.append(reporter)
 
