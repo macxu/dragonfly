@@ -191,7 +191,6 @@ class Jenkins:
         jobsCount = len(jobs)
         jobIndex = 0
 
-        testCases = []
         jobHunters = []
         for job in jobs:
             jobIndex += 1
@@ -202,26 +201,12 @@ class Jenkins:
             jobHunters.append(jobHunter)
             jobHunter.start()
 
-            # buildUrl = self.getLatestBuildUrl(job["url"])
-            # if (not self.getLatestBuildUrl(job["url"])):
-            #     print("Failed in getting latest build url for job: " + job["url"])
-            #     continue
-            #
-            # jobTestCases = self.getTestCasesByBuild(buildUrl)
-            # if (not jobTestCases):
-            #     continue
-            #
-            # if (len(jobTestCases) == 0):
-            #     continue
-            #
-            # testCases += jobTestCases
-
         for jobHunter in jobHunters:
             jobHunter.join()
 
-            # pprint(jobHunter.getAllCases())
-
-
+        testCases = []
+        for jobHunter in jobHunters:
+            testCases += jobHunter.getAllCases()
 
         return testCases
 
@@ -326,9 +311,9 @@ class Jenkins:
         }
 
         testCaseStats['release-012-qa2'] = {
-            "passed": 985,
-            "failed": 94,
-            "skipped": 0
+            "passed": 1052,
+            "failed": 72,
+            "skipped": 15
         }
 
         return testCaseStats
@@ -462,8 +447,10 @@ if (__name__ == '__main__'):
 
     # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
 
-    reporters = jenkins.getReportersByView(releaseViewUrl)
-
-    for reporter in reporters:
-        pprint.pprint(reporter.getReport())
+    # reporters = jenkins.getReportersByView(releaseViewUrl)
+    #
+    # for reporter in reporters:
+    #     pprint.pprint(reporter.getReport())
     # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
+
+    pprint.pprint(jenkins.reportByView(releaseViewUrl))
