@@ -128,7 +128,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     label: {
                         normal: {
                             show: true,
-                            position: 'insideRight'
+                            position: 'inside'
                         }
                     },
                     data: passedCaseCountArray,
@@ -145,7 +145,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     label: {
                         normal: {
                             show: true,
-                            position: 'insideRight'
+                            position: 'inside'
                         }
                     },
                     data: failedcaseCountArray,
@@ -157,6 +157,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 }
             ]
         };
+
+        myChart.on('click', function (params) {
+           console.log(params.name);
+        });
 
         myChart.setOption(option);
     }
