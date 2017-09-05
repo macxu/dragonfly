@@ -231,7 +231,7 @@ class Jenkins:
         2. number of passed cases, desc 
     """
     def sortReporters(self, reporters):
-        reporters = sorted(reporters, key = lambda k: (len(k.cases), len(k.casesPassed)), reverse=True)
+        reporters = sorted(reporters, key = lambda k: (len(k.getAllCases()), len(k.casesPassed)), reverse=True)
         return reporters
 
 
