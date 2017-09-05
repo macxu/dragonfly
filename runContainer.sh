@@ -22,7 +22,7 @@ echo "port mapping:"
 echo "host:container = "${HOST_BIND_PORT}":"${CONTAINER_PORT}
 echo ""
 
-docker run -p ${HOST_BIND_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME} -t ${DOCKER_USER}/${IMAGE_NAME}':'${IMAGE_TAG}
+docker run -p ${HOST_BIND_PORT}:${CONTAINER_PORT} -d --name ${CONTAINER_NAME} -t ${DOCKER_USER}/${IMAGE_NAME}':'${IMAGE_TAG}
 
 echo ""
 echo "service available at:"
