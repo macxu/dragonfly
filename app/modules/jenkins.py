@@ -145,6 +145,43 @@ class Jenkins:
 
         return self.getJenkinsJson(jobUrl, 'builds')[0]["url"]
 
+    """ get the latest build urls by a view url
+        the response is organized in key/value pair where the key is the job url and value as the build url
+        if there is no build, the build url is set to empty string
+    """
+    def getLatestBuildUrlsByView(self, viewUrl):
+        jobs = self.getJobsOfView(viewUrl)
+
+        jobsCount = len(jobs)
+        jobIndex = 0
+
+        resters = []
+        for job in jobs:
+            jobIndex += 1
+            jobUrl = job["url"]
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
+
+            jobApiUrl = self.getJenkinsApiUrl(jobUrl)
+            jobRester = Rester(jobApiUrl, "builds")
+            jobRester.getMetadata()['job'] = jobUrl
+            resters.append(jobRester)
+            jobRester.start()
+
+        for jobRester in resters:
+            jobRester.join()
+
+        builds = {}
+        for jobRester in resters:
+            resterResponse = jobRester.getResponse()
+
+            if (not resterResponse or len(resterResponse) == 0):
+                builds[jobRester.getMetadata()['job']] = ''
+            else:
+                builds[jobRester.getMetadata()['job']] = resterResponse[0]["url"]
+
+        return builds
+
+
     """ Get the test case reports of the specified Jenkins view
         It's the joint result of all the jobs of the view, with test case reports of the last build of each job
     """
@@ -161,6 +198,7 @@ class Jenkins:
 
             buildUrl = self.getLatestBuildUrl(job["url"])
             if (not self.getLatestBuildUrl(job["url"])):
+                print("Failed in getting latest build url for job: " + job["url"])
                 continue
 
             jobTestCases = self.getTestCasesByBuild(buildUrl)
@@ -347,15 +385,20 @@ class Jenkins:
 
         return matchObj.group(1)
 
-    """ Get the API response of a specified Jenkins URL
-        This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
-    """
-    def getJenkinsJson(self, url, propertyKey=''):
+    def getJenkinsApiUrl(self, url):
         apiPostfix = 'api/json?pretty=true'
         if (not url.endswith(apiPostfix)):
             if (not url.endswith('/')):
                 url += '/'
             url += apiPostfix
+
+        return url
+
+    """ Get the API response of a specified Jenkins URL
+        This is how Jenkins exposes it REST APIs, just appending "/api/json?pretty=true" to the url and get the data in JSON
+    """
+    def getJenkinsJson(self, url, propertyKey=''):
+        url = self.getJenkinsApiUrl(url)
 
         response = requests.get(url)
         if response.status_code != 200:
@@ -405,7 +448,10 @@ if (__name__ == '__main__'):
     # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
-    reporters = jenkins.getReportersByView(releaseViewUrl)
-    for reporter in reporters:
-        pprint.pprint(reporter.getReport())
-    # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
+
+    pprint.pprint(jenkins.getLatestBuildUrlsByView(releaseViewUrl))
+
+    # reporters = jenkins.getReportersByView(releaseViewUrl)
+    # for reporter in reporters:
+    #     pprint.pprint(reporter.getReport())
+    # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))

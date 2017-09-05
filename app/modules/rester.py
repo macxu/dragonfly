@@ -15,12 +15,25 @@ class Rester(threading.Thread):
         self.url = url
         self.responseKey = propertyKey
 
+        self.response = {}
+
+        self.metadata = {}
+
+    def getUrl(self):
+        return self.url
+
+    def getResponse(self):
+        return self.response
+
+    def getMetadata(self):
+        return self.metadata
+
     """ Send rest request to get JSON, return the whole response as JSON or the sub-JSON by the specified key
         This method is to be called in multi-threading
     """
     def run(self):
-
-        return self.getJson(self.url, self.responseKey)
+        self.response = self.getJson(self.url, self.responseKey)
+        return self.response
 
 
     """ Send rest request to get JSON, return the whole response as JSON or the sub-JSON by the specified key
