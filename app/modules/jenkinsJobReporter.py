@@ -36,9 +36,12 @@ class JenkinsJobReporter(threading.Thread):
     def getJobShortName(self):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
         # to:   bulk-bing-sync
-        matchObj = re.match(r'.*/job/qe-(.*)-tests-.*', self.jobUrl, re.M | re.I)
+        matchObj = re.match(r'.*/job/qe-(.*)-test[s]?-.*', self.jobUrl, re.M | re.I)
         if (matchObj):
             self.jobShortName = matchObj.group(1)
+            return
+
+
 
 
     def getTestCasesInfo(self):
