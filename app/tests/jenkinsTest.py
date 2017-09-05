@@ -28,27 +28,27 @@ class JenkinsTest(unittest.TestCase):
 
     def test_sortedReportors(self):
         reporters = []
-        reporter1 = JenkinsJobReporter
+        reporter1 = JenkinsJobReporter()
         reporter1.cases = []
         reporter1.casesPassed = []
         reporters.append(reporter1)
 
-        reporter2 = JenkinsJobReporter
+        reporter2 = JenkinsJobReporter()
         reporter2.cases = [None]
         reporter2.casesPassed = [None]
         reporters.append(reporter2)
 
-        reporter3 = JenkinsJobReporter
+        reporter3 = JenkinsJobReporter()
         reporter3.cases = [None]
         reporter3.casesPassed = []
         reporters.append(reporter3)
 
-        reporter4 = JenkinsJobReporter
+        reporter4 = JenkinsJobReporter()
         reporter4.cases = [None]*2
         reporter4.casesPassed = [None]
         reporters.append(reporter4)
 
-        reporter5 = JenkinsJobReporter
+        reporter5 = JenkinsJobReporter()
         reporter5.cases = [None]*2
         reporter5.casesPassed = [None]*2
         reporters.append(reporter5)
@@ -58,6 +58,7 @@ class JenkinsTest(unittest.TestCase):
 
         expected = [reporter5, reporter4, reporter2, reporter3, reporter1]
 
+        self.assertNotEqual(actual, reporters, "Should not equal")
         self.assertEqual(actual, expected, 'Not equal')
 
 
