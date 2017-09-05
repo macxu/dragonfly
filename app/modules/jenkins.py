@@ -192,23 +192,36 @@ class Jenkins:
         jobIndex = 0
 
         testCases = []
+        jobHunters = []
         for job in jobs:
             jobIndex += 1
-            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job["url"])
+            jobUrl = job["url"]
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
 
-            buildUrl = self.getLatestBuildUrl(job["url"])
-            if (not self.getLatestBuildUrl(job["url"])):
-                print("Failed in getting latest build url for job: " + job["url"])
-                continue
+            jobHunter = JenkinsJobReporter(jobUrl)
+            jobHunters.append(jobHunter)
+            jobHunter.start()
 
-            jobTestCases = self.getTestCasesByBuild(buildUrl)
-            if (not jobTestCases):
-                continue
+            # buildUrl = self.getLatestBuildUrl(job["url"])
+            # if (not self.getLatestBuildUrl(job["url"])):
+            #     print("Failed in getting latest build url for job: " + job["url"])
+            #     continue
+            #
+            # jobTestCases = self.getTestCasesByBuild(buildUrl)
+            # if (not jobTestCases):
+            #     continue
+            #
+            # if (len(jobTestCases) == 0):
+            #     continue
+            #
+            # testCases += jobTestCases
 
-            if (len(jobTestCases) == 0):
-                continue
+        for jobHunter in jobHunters:
+            jobHunter.join()
 
-            testCases += jobTestCases
+            # pprint(jobHunter.getAllCases())
+
+
 
         return testCases
 
@@ -235,17 +248,15 @@ class Jenkins:
         for job in jobs:
             jobIndex += 1
 
-            if (jobIndex > 20):
-                break
+            jobUrl = job["url"]
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
 
-            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job["url"])
-
-            buildUrl = self.getLatestBuildUrl(job["url"])
-            if (not self.getLatestBuildUrl(job["url"])):
-                continue
-
-            reporter = self.getReporterByBuild(buildUrl)
+            reporter = JenkinsJobReporter(jobUrl)
+            reporter.start()
             reporters.append(reporter)
+
+        for reporter in reporters:
+            reporter.join()
 
         orderedReporters = self.sortReporters(reporters)
         return orderedReporters
@@ -331,7 +342,6 @@ class Jenkins:
 
     """ Get the test case reports of the specified Jenkins build
         """
-
     def getReporterByBuild(self, buildUrl):
         reportUrl = urljoin(buildUrl, 'testReport')
         testSuites = self.getJenkinsJson(reportUrl, 'suites')
@@ -449,9 +459,9 @@ if (__name__ == '__main__'):
 
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
 
-    pprint.pprint(jenkins.getLatestBuildUrlsByView(releaseViewUrl))
+    # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
 
-    # reporters = jenkins.getReportersByView(releaseViewUrl)
-    # for reporter in reporters:
-    #     pprint.pprint(reporter.getReport())
+    reporters = jenkins.getReportersByView(releaseViewUrl)
+    for reporter in reporters:
+        pprint.pprint(reporter.getReport())
     # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))

@@ -40,12 +40,22 @@ class Rester(threading.Thread):
     """
     def getJson(self, url, propertyKey=''):
 
-        response = requests.get(url)
-        jsonResponse = response.json()
+        print(url)
+
+        jsonResponse = {}
+        try:
+            response = requests.get(url)
+            jsonResponse = response.json()
+        except:
+            asf= ""
 
         if (propertyKey == ''):
             return jsonResponse
-        else:
+
+        if (propertyKey in jsonResponse):
             return jsonResponse[propertyKey]
+
+        print(propertyKey + " is not a property of the response for url: " + url)
+        return {}
 
 
