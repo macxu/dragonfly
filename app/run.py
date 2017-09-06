@@ -1,9 +1,11 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, json
 
 from app.modules.jenkins import Jenkins
 from app.modules.maven import Mavener
+from app.modules.mongo import Mongo
 
 app = Flask(__name__)
+mongo = Mongo(app)
 
 @app.route('/')
 def index():
@@ -35,25 +37,30 @@ def getJobsByView():
     return jsonify(jobs)
 
 
+@app.route('/api/mongo/releases_stats')
+def getJenkinsReleaseStats():
+
+    stats = mongo.getReleasesStats()
+    return jsonify(stats)
+
 @app.route('/api/jenkins/releases')
 def getJenkinsReleaseData():
-    jenkins = Jenkins()
 
     if (not request.args.get('release')):
-        testCaseStats = jenkins.getTestCaseCountForReleases()
-        return jsonify(testCaseStats)
-    else:
-        releaseNumber = request.args.get('release')
-        viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/' + releaseNumber + '/view/Tests/'
-        print("view URL: " + viewUrl)
+        return jsonify({})
 
-        reports = []
-        reporters = jenkins.getReportersByView(viewUrl)
-        for reporter in reporters:
-            reports.append(reporter.getReport())
+    releaseNumber = request.args.get('release')
+    viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/' + releaseNumber + '/view/Tests/'
+    print("view URL: " + viewUrl)
 
-        return jsonify(reports)
+    reports = []
 
+    jenkins = Jenkins()
+    reporters = jenkins.getReportersByView(viewUrl)
+    for reporter in reporters:
+        reports.append(reporter.getReport())
+
+    return jsonify(reports)
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
