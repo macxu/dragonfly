@@ -24,32 +24,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            var releaseNumber = getUrlParameter('release');
-            $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
-                loadChart(reports);
-            });
-        });
-    </script>
-
-    <script>
-        function getUrlParameter(sParam) {
-            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-                sURLVariables = sPageURL.split('&'),
-                sParameterName,
-                i;
-
-            for (i = 0; i < sURLVariables.length; i++) {
-                sParameterName = sURLVariables[i].split('=');
-
-                if (sParameterName[0] === sParam) {
-                    return sParameterName[1] === undefined ? true : sParameterName[1];
-                }
-            }
-        };
-    </script>
-
 </head>
 
 <body ng-controller="dragonflyJenkinsController">
@@ -76,6 +50,32 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
 <script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var releaseNumber = getUrlParameter('release');
+        $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
+            loadChart(reports);
+        });
+    });
+</script>
+
+<script>
+    function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+</script>
 
 <script>
 
