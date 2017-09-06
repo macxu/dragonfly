@@ -181,27 +181,26 @@ class Jenkins:
 
         return builds
 
+    """Compare between job lists, find jobs which they have the same short name
+       Return a turple which left is old job , right is new job 
+    """
+    def findJobsWithSameShortName(self, oldJobs, newJobs):
+        # # create dictionary, key is the job short name
+        jobNameDictionary = {self.getJobShortName(job['url']): job for job in oldJobs if job}
+
+        # if job short name is existed in the dictionary, we can assume two jobs are the same.
+        return [(jobNameDictionary[self.getJobShortName(job['url'])], job) for job in newJobs if
+                    self.getJobShortName(job['url']) in jobNameDictionary.keys()]
 
     """ Get the Jobs difference between two view
         first parameter is the old viewurl
         second parameter is the new viewurl
     """
-    def getDifferenceBetweenViews(self, oldViewUrl, newViewUrl):
+    def compareViews(self, oldViewUrl, newViewUrl):
         report = {}
         oldJobs = self.getJobsOfView(oldViewUrl)
         newJobs = self.getJobsOfView(newViewUrl)
-        jobNameDictionary = {}
-        sameJobs = []
-
-        # create dictionary, key is the job short name
-        for job in oldJobs:
-            if job:
-                jobNameDictionary[self.getJobShortName(job['url'])]=job
-        # if job short name is existed in the dictionary, two jobs are the same
-        for job in newJobs:
-            jobName = self.getJobShortName(job['url'])
-            if job and jobName in jobNameDictionary.keys():
-                sameJobs.append((jobNameDictionary.get(jobName), job))
+        sameJobs = self.findJobsWithSameShortName(oldJobs, newJobs)
 
         deletedJobs = [ job for job in oldJobs if job not in [ jobTurple[0] for jobTurple in sameJobs ]]
         report["deletedJobs"] = deletedJobs
@@ -211,26 +210,50 @@ class Jenkins:
         report["addedJobs"] = addedJobs
         print("Added Jobs")
         pprint.pprint(addedJobs)
+        report["test case"] = self.compareTestCases(sameJobs)
+
+        return report
+
+    """ Get the test cases difference between same job in the different view
+        sameJobs is a turple, left is old job, right is new job
+        return a dictionary, contains the added test cases and deleted test cases
+    """
+    def compareTestCases(self, sameJobs):
         deletedCases = []
         addedCases = []
+        oldJobReporters = []
+        newJobReporters = []
+        report = {}
         for jobTurple in sameJobs:
-            #Get old job test cases
-            reporter = JenkinsJobReporter()
-            reporter.latestBuildUrl = self.getLatestBuildUrl(jobTurple[0]['url'])
-            reporter.getTestCasesInfo()
-            oldJobTestCases = reporter.getAllCases()
+            # Get old job test cases
+
+            oldJobReporter = JenkinsJobReporter(jobTurple[0]['url'])
+            oldJobReporter.start()
+
+            oldJobReporters.append(oldJobReporter)
 
             # Get new job test cases
-            reporter = JenkinsJobReporter()
-            reporter.latestBuildUrl = self.getLatestBuildUrl(jobTurple[1]['url'])
-            reporter.getTestCasesInfo()
-            newJobTestCases = reporter.getAllCases()
+            newJobReporter = JenkinsJobReporter(jobTurple[1]['url'])
+            newJobReporter.start()
+
+            newJobReporters.append(newJobReporter)
+
+        for reporter in newJobReporters:
+            reporter.join()
+        for reporter in oldJobReporters:
+            reporter.join()
+
+        for old, new in zip(oldJobReporters, newJobReporters):
+            oldJobTestCases = old.getAllCases()
+            newJobTestCases = new.getAllCases()
             if not len(newJobTestCases) or not len(oldJobTestCases):
                 continue
-            caseDictionary = {testCase['name']+testCase['testClass']+testCase['testMethod']: testCase for testCase in oldJobTestCases}
-            sameTestCases = [(caseDictionary[testCase['name']+testCase['testClass']+testCase['testMethod']], testCase) for testCase in newJobTestCases if testCase['name']+testCase['testClass']+testCase['testMethod'] in caseDictionary.keys()]
-            deletedCases += [testCase for testCase in oldJobTestCases if testCase not in [caseTurple[0] for caseTurple in sameTestCases]]
-            addedCases += [testCase for testCase in newJobTestCases if testCase not in [caseTurple[1] for caseTurple in sameTestCases]]
+            keySet = set([self.getTestCaseKey(testCase) for testCase in oldJobTestCases])
+            addedCases += [testCase for testCase in newJobTestCases if self.getTestCaseKey(testCase) not in keySet]
+            sameKeys = [self.getTestCaseKey(testCase) for testCase in newJobTestCases if
+                        self.getTestCaseKey(testCase) in keySet]
+            # Currently we assume if the new test case's test method, test class and name are the same to the old, they all the same.
+            deletedCases += [testCase for testCase in oldJobTestCases if self.getTestCaseKey(testCase) not in sameKeys]
 
         print("Deleted Test Cases")
         report["deletedCases"] = deletedCases
@@ -240,7 +263,8 @@ class Jenkins:
         pprint.pprint(addedCases)
         return report
 
-
+    def getTestCaseKey(self, testCase):
+        return testCase['name']+testCase['testClass']+testCase['testMethod']
 
     """ Get the test case reports of the specified Jenkins view
         It's the joint result of all the jobs of the view, with test case reports of the last build of each job
@@ -506,7 +530,12 @@ if (__name__ == '__main__'):
     releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
     releaseViewUrlOld = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
 
-    jenkins.getDifferenceBetweenViews(releaseViewUrlOld,releaseViewUrl)
+    # reporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-google-bulk-campaign-tests-qa2-release-012/')
+    # reporter.start()
+    # reporter.join()
+    # reporter.getAllCases()
+
+    report = jenkins.compareViews(releaseViewUrlOld,releaseViewUrl)
 
     # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
 
@@ -516,4 +545,4 @@ if (__name__ == '__main__'):
     #     pprint.pprint(reporter.getReport())
     # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
 
-    pprint.pprint(jenkins.reportByView(releaseViewUrl))
+    #pprint.pprint(jenkins.reportByView(releaseViewUrl))
