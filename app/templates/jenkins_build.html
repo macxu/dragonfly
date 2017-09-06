@@ -101,36 +101,27 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     function loadChart(report) {
 
-        var divCasesPassed = $('#divCasesPassed');
-        // <button type="button" class="btn btn-default btn-block">Button 2</button>
-        var casesPassed = report.cases.passed;
-        $.each(casesPassed, function( index, value ) {
-            console.log(value);
+        loadTestCases($('#divCasesPassed'), report.cases.passed);
 
-            var testCaseButton = $('<button></button>').attr('type', 'button')
-                .addClass('btn btn-default btn-block')
-                .addClass('text-left')
-                .text(value['name']);
-                divCasesPassed.append(testCaseButton);
-
-        });
-
-        var divCasesFailed = $('#divCasesFailed');
-        var casesFailed = report.cases.failed;
-        $.each(casesFailed, function( index, value ) {
-            console.log(value);
-
-            var testCaseButton = $('<button></button>').attr('type', 'button')
-                .addClass('btn btn-default btn-block')
-                .addClass('text-left')
-                .text(value['name']);
-                divCasesFailed.append(testCaseButton);
-
-        });
-
+        loadTestCases($('#divCasesFailed'), report.cases.failed);
     }
+</script>
 
+<script>
+    
+    function loadTestCases(rootContainer, cases) {
+        // <button type="button" class="btn btn-default btn-block">Button 2</button>
+        $.each(cases, function( index, value ) {
+            console.log(value);
 
+            var testCaseButton = $('<button></button>').attr('type', 'button')
+                .addClass('btn btn-default btn-block')
+                .addClass('text-left')
+                .text(value['name']);
+                rootContainer.append(testCaseButton);
+
+        });
+    }
 </script>
 
 </body>
