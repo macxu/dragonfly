@@ -132,6 +132,16 @@ class Jenkins:
         else:
             return False
 
+    def getJobByBuild(self, jenkinsUrl):
+        if (self.isJob(jenkinsUrl)):
+            return jenkinsUrl
+
+        matchObj = re.match(r'(.*)\/\d+\/.*', jenkinsUrl, re.M | re.I)
+        if (matchObj):
+            return matchObj.group(1) + '/'
+
+        return ''
+
 
     """ Get the URL of the latest build of the specified Jenkins job
     """
@@ -300,7 +310,7 @@ class Jenkins:
 
     """ Get the test case reports of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
-    """
+        """
     def getReportersByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
 
@@ -355,6 +365,53 @@ class Jenkins:
 
         return stats
 
+
+    """ Get the test case reports of the specified Jenkins build
+    """
+    def getTestCasesByBuild(self, buildUrl):
+
+        reporter = self.getReporterByBuild(buildUrl)
+
+        return reporter.getAllCases()
+
+    """ Get the test case reports of the specified Jenkins build
+        """
+    def getReporterByBuild(self, buildUrl):
+        reportUrl = urljoin(buildUrl, 'testReport')
+        testSuites = self.getJenkinsJson(reportUrl, 'suites')
+
+        testCases = []
+        for testSuite in testSuites:
+            for testCase in testSuite['cases']:
+                # set testClass
+                className = testCase['className']
+                testCase['testClass'] = className.split('.')[-1]
+
+                # set testMethod
+                methodName = testCase['name']
+                methodNameBracketIndex = methodName.rfind(' (')
+                if methodNameBracketIndex > -1:
+                    serialMethodNameBracketIndex = methodName.rfind(')')
+                    methodName = methodName[methodNameBracketIndex + 2: serialMethodNameBracketIndex]
+
+                testCase['testMethod'] = methodName
+
+                # set testCase
+                caseName = testCase['name']
+                if methodNameBracketIndex > -1:
+                    serialCountClosingBracketIndex = caseName.find("] ")
+                    caseName = caseName[serialCountClosingBracketIndex + 2: methodNameBracketIndex]
+
+                testCase["name"] = caseName
+                testCases.append(testCase)
+
+        print("        done getting cases for " + buildUrl)
+        reporter = JenkinsJobReporter()
+        reporter.latestBuildUrl = buildUrl
+        reporter.jobShortName = self.getJobShortName(buildUrl)
+        reporter.setCases(testCases)
+
+        return reporter
 
     def getJobShortName(self, jenkinsUrl):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
