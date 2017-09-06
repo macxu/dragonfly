@@ -44,13 +44,17 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             <div class="panel-group">
 
                 <div class="panel panel-primary">
-                  <div class="panel-heading">Panel with panel-primary class</div>
-                  <div class="panel-body">Summary Info</div>
+                  <div class="panel-heading">Job Summary</div>
+                  <div class="panel-body">
+                      <a href="#" class="btn btn-info" role="button">Link Button</a>
+
+                  </div>
                 </div>
 
                 <div class="panel panel-success">
                   <div class="panel-heading">Test Cases Passed</div>
-                  <div class="panel-body" id="divCasesPassed"></div>
+                  <div class="panel-body">
+                    <div class="list-group" id="divCasesPassed"></div>
                 </div>
 
                 <div class="panel panel-danger">
@@ -101,6 +105,8 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     function loadChart(report) {
 
+        loadSummary(report);
+
         loadTestCases($('#divCasesPassed'), report.cases.passed);
 
         loadTestCases($('#divCasesFailed'), report.cases.failed);
@@ -108,16 +114,24 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 </script>
 
 <script>
+    function loadSummary(report) {
+
+
+    }
+</script>
+
+<script>
     
     function loadTestCases(rootContainer, cases) {
         // <button type="button" class="btn btn-default btn-block">Button 2</button>
+
+        // <a href="#" class="list-group-item">First item</a>
         $.each(cases, function( index, value ) {
             console.log(value);
 
-            var testCaseButton = $('<button></button>').attr('type', 'button')
-                .addClass('btn btn-default btn-block')
-                .addClass('text-left')
-                .text(value['name']);
+            var testCaseButton = $('<a></a>').attr('href', '#')
+                .addClass('list-group-item')
+                .text( '[' + index + ']: ' + value['name']);
                 rootContainer.append(testCaseButton);
 
         });
