@@ -41,9 +41,24 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         <div class="container-fluid">
             <!-- Page Heading-->
 
-            <div class="container" id="divReleaseStat" style="height: 100%; min-height:2000px">
-            </div>
+            <div class="panel-group">
 
+                <div class="panel panel-primary">
+                  <div class="panel-heading">Panel with panel-primary class</div>
+                  <div class="panel-body">Summary Info</div>
+                </div>
+
+                <div class="panel panel-success">
+                  <div class="panel-heading">Test Cases Passed</div>
+                  <div class="panel-body" id="divCasesPassed"></div>
+                </div>
+
+                <div class="panel panel-danger">
+                  <div class="panel-heading">Test Cases Failed</div>
+                      <div class="panel-body" id="divCasesFailed">
+                      </div>
+                </div>
+          </div>
         </div>
     </div>
 </div>
@@ -58,9 +73,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     var reportsMap = {};
 
     $(document).ready(function() {
-        var releaseNumber = getUrlParameter('release');
-        $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
-            loadChart(reports);
+        var buildUrl = getUrlParameter('build');
+        $.get( "/api/jenkins/build?build=" + buildUrl, function(report) {
+            loadChart(report);
         });
     });
 </script>
@@ -84,101 +99,35 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script>
 
-    function loadChart(reports) {
+    function loadChart(report) {
 
-        jobNames = [];
-        passedCaseCountArray = [];
-        failedcaseCountArray = [];
+        var divCasesPassed = $('#divCasesPassed');
+        // <button type="button" class="btn btn-default btn-block">Button 2</button>
+        var casesPassed = report.cases.passed;
+        $.each(casesPassed, function( index, value ) {
+            console.log(value);
 
-        for (var i = 0; i < reports.length; i++ ) {
-            report = reports[i];
-
-            jobNames.unshift(report['job'])
-
-            passedCaseCountArray.unshift(report['cases']['passed'].length);
-            failedcaseCountArray.unshift(report['cases']['failed'].length);
-
-            // save it for later usage convenience
-            reportsMap[report['job']] = report;
-        }
-
-        var myChart = echarts.init(document.getElementById('divReleaseStat'));
-
-        option = {
-            tooltip : {
-                trigger: 'axis',
-                axisPointer : {
-                    type : 'shadow'
-                }
-            },
-            legend: {
-                data: ['Cases Passed', 'Cases Failed']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            xAxis:  {
-                type: 'value',
-
-                // Enable mouse event
-                silent: false
-            },
-            yAxis: {
-                type: 'category',
-                data: jobNames
-            },
-            series: [
-                {
-                    name: 'Cases Passed',
-                    type: 'bar',
-                    stack: 'Cases Executed',
-                    label: {
-                        normal: {
-                            show: true,
-                            position: 'inside'
-                        }
-                    },
-                    data: passedCaseCountArray,
-                    itemStyle: {
-                        normal: {
-                            color: 'green'
-                        }
-                    }
-                },
-                {
-                    name: 'Cases Failed',
-                    type: 'bar',
-                    stack: 'Cases Executed',
-                    label: {
-                        normal: {
-                            show: true,
-                            position: 'inside'
-                        }
-                    },
-                    data: failedcaseCountArray,
-                    itemStyle: {
-                        normal: {
-                            color: 'red'
-                        }
-                    }
-                }
-            ]
-        };
-
-        myChart.on('click', function (params) {
-          // Make sure event from target axis
-
-          var clickedProjectName = params.name;
-          var clickedReport = reportsMap[clickedProjectName];
-
-            window.open('/jenkins?build=' + clickedReport.build, '_blank');
+            var testCaseButton = $('<button></button>').attr('type', 'button')
+                .addClass('btn btn-default btn-block')
+                .addClass('text-left')
+                .text(value['name']);
+                divCasesPassed.append(testCaseButton);
 
         });
 
-        myChart.setOption(option);
+        var divCasesFailed = $('#divCasesFailed');
+        var casesFailed = report.cases.failed;
+        $.each(casesFailed, function( index, value ) {
+            console.log(value);
+
+            var testCaseButton = $('<button></button>').attr('type', 'button')
+                .addClass('btn btn-default btn-block')
+                .addClass('text-left')
+                .text(value['name']);
+                divCasesFailed.append(testCaseButton);
+
+        });
+
     }
 
 

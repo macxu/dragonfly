@@ -34,6 +34,9 @@ class JenkinsJobReporter(threading.Thread):
         self.viewUrl = url
 
     def run(self):
+        self.load()
+
+    def load(self):
         self.getJobShortName()
         self.getLatestBuildInfo()
         if (self.latestBuildUrl):

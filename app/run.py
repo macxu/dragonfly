@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, json
 
 from app.modules.jenkins import Jenkins
+from app.modules.jenkinsJobReporter import JenkinsJobReporter
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
 
@@ -13,10 +14,22 @@ def index():
 
 @app.route('/jenkins')
 def jenkins():
-    if (not request.args.get('release')):
-        return render_template("jenkins.html")
-    else:
+    if (request.args.get('release')):
         return render_template("jenkins_release.html")
+    elif (request.args.get('build')):
+        jenkinsBuildUrl = request.args.get('build')
+        jenkins = Jenkins()
+        jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
+
+        reporter = JenkinsJobReporter(jobUrl)
+        reporter.load()
+        report = reporter.getReport()
+
+        reportJson = jsonify(report)
+        return render_template("jenkins_build.html", report=reportJson)
+    else:
+        return render_template("jenkins.html")
+
 
 
 @app.route('/job')
@@ -42,6 +55,22 @@ def getJenkinsReleaseStats():
 
     stats = mongo.getReleasesStats()
     return jsonify(stats)
+
+@app.route('/api/jenkins/build')
+def getJenkinsBuildData():
+    if (not request.args.get('build')):
+        return jsonify({})
+
+    jenkinsBuildUrl = request.args.get('build')
+    jenkins = Jenkins()
+    jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
+
+    reporter = JenkinsJobReporter(jobUrl)
+    reporter.load()
+    report = reporter.getReport()
+
+    return jsonify(report)
+
 
 @app.route('/api/jenkins/releases')
 def getJenkinsReleaseData():

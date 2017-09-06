@@ -132,6 +132,16 @@ class Jenkins:
         else:
             return False
 
+    def getJobByBuild(self, jenkinsUrl):
+        if (self.isJob(jenkinsUrl)):
+            return jenkinsUrl
+
+        matchObj = re.match(r'(.*)\/\d+\/.*', jenkinsUrl, re.M | re.I)
+        if (matchObj):
+            return matchObj.group(1) + '/'
+
+        return ''
+
 
     """ Get the URL of the latest build of the specified Jenkins job
     """
@@ -470,6 +480,7 @@ if (__name__ == '__main__'):
 
     #buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
     buildUrl='http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-bulk-bing-tests-qa2-release-011/1/'
+
     #cases = jenkins.getTestCasesByBuild(buildUrl)
     #pprint.pprint(cases)
 
@@ -495,7 +506,7 @@ if (__name__ == '__main__'):
     # reporter.join()
     # reporter.getAllCases()
 
-    report = jenkins.compareViews(releaseViewUrlOld,releaseViewUrl)
+    # report = jenkins.compareViews(releaseViewUrlOld,releaseViewUrl)
 
     # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
 
@@ -505,4 +516,4 @@ if (__name__ == '__main__'):
     #     pprint.pprint(reporter.getReport())
     # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
 
-    #pprint.pprint(jenkins.reportByView(releaseViewUrl))
+    pprint.pprint(jenkins.reportByView('http://ci.marinsw.net/view/Qe/view/Release/view/release-007/view/Tests/'))
