@@ -1,12 +1,14 @@
 
 """Module for MongoDB"""
+import pymongo
 
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 import os
-from flask import jsonify
+from flask import jsonify, json
 from flask import request
+from bson.json_util import dumps
 from flask_pymongo import PyMongo
 
 class Mongo:
@@ -29,15 +31,30 @@ class Mongo:
         self.app = flaskApp
         self.mongo = PyMongo(flaskApp)
 
-    """ return the mongo instance
-    """
-    def getReleases(self):
-        with self.app.app_context():
-            table_releases = self.mongo.db.releases
+    # """ return the mongo instance
+    # """
+    # def getReleases(self):
+    #     with self.app.app_context():
+    #         table = self.mongo.db.releases_stats
+    #
+    #         docId = table.insert_one({'release-007': 'xxxxxxxxxxx'}).inserted_id
+    #         for doc in table.find():
+    #             print(doc)
 
-            docId = table_releases.insert_one({'release-007': 'xxxxxxxxxxx'}).inserted_id
-            for doc in table_releases.find():
-                print(doc)
+    """ get the stats of all releases
+        """
+    def getReleasesStats(self):
+        with self.app.app_context():
+            table = self.mongo.db.releases_stats
+
+            # documents = dumps(table.find())
+            documents = table.find().sort([
+                ("created", pymongo.DESCENDING)
+            ])
+
+            records = dumps(documents)
+            recordsJson = json.loads(records)
+            return recordsJson
 
 
 if (__name__ == '__main__'):

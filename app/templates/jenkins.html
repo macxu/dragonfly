@@ -24,33 +24,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            $.get( "/api/jenkins/releases", function( responseData ) {
-
-                // xCategories is like this:
-                // ['Release 008','Release 009', 'Release 010', 'Release 011']
-                var xCategories = [];
-
-                var passed = [];
-                var failed = [];
-
-                for (var releaseName in responseData) {
-                  if (responseData.hasOwnProperty(releaseName)) {
-
-                    xCategories.push(releaseName);
-
-                    var releaseStat = responseData[releaseName];
-                    passed.push(releaseStat['passed']);
-                    failed.push(releaseStat['failed']);
-                  }
-                }
-
-                loadChart(xCategories, passed, failed);
-            });
-        });
-    </script>
-
 </head>
 
 <body ng-controller="dragonflyJenkinsController">
@@ -87,6 +60,31 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
 <script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $.get( "/api/mongo/releases_stats", function( releaseDatas ) {
+
+            // xCategories is like this:
+            // ['Release 008','Release 009', 'Release 010', 'Release 011']
+            var xCategories = [];
+
+            var passed = [];
+            var failed = [];
+
+            for ( var i = 0; i < releaseDatas.length; i++ ) {
+                releaseData = releaseDatas[i];
+
+                xCategories.unshift(releaseData['release']);
+
+                passed.unshift(releaseData['stats']['passed']);
+                failed.unshift(releaseData['stats']['failed']);
+            }
+
+            loadChart(xCategories, passed, failed);
+        });
+    });
+</script>
 
 <script>
 

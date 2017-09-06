@@ -338,46 +338,6 @@ class Jenkins:
         return stats
 
 
-
-
-    """ Get the test case count history data for the recent releases
-        Might need to cache the data in DB for frozen releases so we don't have to hit Jenkins for each requests.
-    """
-    def getTestCaseCountForReleases(self):
-
-        testCaseStats = {}
-
-        testCaseStats['release-008'] = {
-            "passed": 892,
-            "failed": 116,
-            "skipped": 0
-        }
-
-        testCaseStats['release-009'] = {
-            "passed": 927,
-            "failed": 88,
-            "skipped": 0
-        }
-
-        testCaseStats['release-010'] = {
-            "passed": 653,
-            "failed": 456,
-            "skipped": 0
-        }
-
-        testCaseStats['release-011'] = {
-            "passed": 952,
-            "failed": 155
-        }
-
-        testCaseStats['release-012-qa2'] = {
-            "passed": 1052,
-            "failed": 72,
-            "skipped": 15
-        }
-
-        return testCaseStats
-
     """ Get the test case reports of the specified Jenkins build
     """
     def getTestCasesByBuild(self, buildUrl):

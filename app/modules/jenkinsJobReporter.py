@@ -18,6 +18,8 @@ class JenkinsJobReporter(threading.Thread):
 
         self.jobUrl = jobUrl
 
+        self.viewUrl = ''
+
         self.jobShortName = jobUrl
         self.latestBuildUrl = ''
         self.latestBuildNumber = 0
@@ -27,6 +29,9 @@ class JenkinsJobReporter(threading.Thread):
         self.casesSkipped = []
 
         self.rester = Rester()
+
+    def setViewUrl(self, url):
+        self.viewUrl = url
 
     def run(self):
         self.getJobShortName()
