@@ -9,12 +9,14 @@ import unittest
 
 class JenkinsTest(unittest.TestCase):
 
+    def setUp(self):
+        self.jenkins = Jenkins()
 
     def test_getJobsOfViews(self):
         url = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-009/view/Tests/'
 
-        jenkins = Jenkins()
-        jobs = jenkins.getJobsOfView(url)
+
+        jobs = self.jenkins.getJobsOfView(url)
 
         self.assertTrue(len(jobs) > 0, "no jobs were found")
 
@@ -58,13 +60,68 @@ class JenkinsTest(unittest.TestCase):
         reporter5.casesSkipped = [None]
         reporters.append(reporter5)
 
-        jenkins = Jenkins()
-        actual = jenkins.sortReporters(reporters)
+        actual = self.jenkins.sortReporters(reporters)
 
         expected = [reporter5, reporter4, reporter2, reporter3, reporter1]
 
         self.assertNotEqual(actual, reporters, "Should not equal")
         self.assertEqual(actual, expected, 'Not equal')
+
+    def test_compareViews_sameView(self):
+        oldViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+        newViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+
+        report = self.jenkins.compareViews(oldViewUrl, newViewUrl)
+        self.assertEqual(len(report['addedJobs']), 0, 'Same view should has no added jobs')
+        self.assertEqual(len(report['deletedJobs']), 0, 'Same view should has no deleted jobs')
+        self.assertEqual(len(report['test case']['deletedCases']), 0, 'Same view should has no deleted test cases')
+        self.assertEqual(len(report['test case']['addedCases']), 0, 'Same view should has no added test cases')
+
+    def test_compareViews(self):
+        oldViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-010/view/Tests/'
+        newViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+
+        report = self.jenkins.compareViews(oldViewUrl, newViewUrl)
+        self.assertEqual(len(report['deletedJobs']), 7, 'Should 7 jobs be deleted, actual is '+str(len(report['deletedJobs'])))
+        self.assertEqual(len(report['addedJobs']), 16, 'Should 16 jobs be added, acutal is '+str(len(report['addedJobs'])))
+
+        self.assertEqual(len(report['test case']['addedCases']), 112,'Should 112 test cases be added, actual is '+str(len(report['test case']['addedCases'])))
+        self.assertEqual(len(report['test case']['deletedCases']), 94, 'Should 16 test cases be deleted, acutal is ' + str(len(report['test case']['deletedCases'])))
+
+    def test_findJobsWithSameShortName(self):
+        oldJobs=[
+            {'url': 'http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-011/'},
+            {'url': 'http://ci.marinsw.net/job/qe-audience-tests-qa2-release-011/'},
+            {'url':'http://ci.marinsw.net/job/qe-ui-dimensions-tab-tests-qa2-release-011/'}
+        ]
+        newJobs=[
+            {'url': 'http://ci.marinsw.net/job/qe-google-bulk-sync-tests-qa2-release-012/'},
+            {'url': 'http://ci.marinsw.net/job/qe-revenue-upload-validator-service-google-tests-qa2-release-012/'},
+            {'url': 'http://ci.marinsw.net/job/qe-audience-tests-qa2-release-012/'}
+        ]
+        expected = [({'url': 'http://ci.marinsw.net/job/qe-audience-tests-qa2-release-011/'},{'url': 'http://ci.marinsw.net/job/qe-audience-tests-qa2-release-012/'})]
+
+        sameJobs = self.jenkins.findJobsWithSameShortName(oldJobs,newJobs)
+        self.assertEqual(sameJobs, expected,'actual is ' + str(sameJobs))
+
+    def test_getTestCasesByView(self):
+
+         viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+         cases = self.jenkins.getTestCasesByView(viewUrl)
+         self.assertEqual((len(cases)), 1134, "actual total test cases is " + str(len(cases)))
+
+    def test_getLatestBuildNumber(self):
+        jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
+        buildNumber = self.jenkins.getLatestBuildNumber(jobUrl)
+        self.assertEqual(buildNumber, 2, "Actual build number is " + str(buildNumber))
+
+    def test_getJobConfigs(self):
+        developBuildUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/'
+        config = self.jenkins.getJobConfigs(developBuildUrl)
+        developJobUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/'
+        config = self.jenkins.getJobConfigs(developJobUrl)
+        releaseBuildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'
+        config = self.jenkins.getJobConfigs(releaseBuildUrl)
 
 
 if( __name__ =='__main__' ):

@@ -6,7 +6,7 @@ from app.modules.rester import Rester
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
-import pprint
+
 import requests
 import xml.dom.minidom as elements
 from bs4 import BeautifulSoup
@@ -204,12 +204,10 @@ class Jenkins:
 
         deletedJobs = [ job for job in oldJobs if job not in [ jobTurple[0] for jobTurple in sameJobs ]]
         report["deletedJobs"] = deletedJobs
-        print("Deleted Jobs")
-        pprint.pprint(deletedJobs)
+
         addedJobs = [ job for job in newJobs if job not in [ jobTurple[1] for jobTurple in sameJobs ]]
         report["addedJobs"] = addedJobs
-        print("Added Jobs")
-        pprint.pprint(addedJobs)
+
         report["test case"] = self.compareTestCases(sameJobs)
 
         return report
@@ -255,12 +253,8 @@ class Jenkins:
             # Currently we assume if the new test case's test method, test class and name are the same to the old, they all the same.
             deletedCases += [testCase for testCase in oldJobTestCases if self.getTestCaseKey(testCase) not in sameKeys]
 
-        print("Deleted Test Cases")
         report["deletedCases"] = deletedCases
-        pprint.pprint(deletedCases)
-        print("Added Test Cases")
         report["addedCases"] = addedCases
-        pprint.pprint(addedCases)
         return report
 
     def getTestCaseKey(self, testCase):
@@ -306,7 +300,7 @@ class Jenkins:
 
     """ Get the test case reports of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
-        """
+    """
     def getReportersByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
 
@@ -333,7 +327,7 @@ class Jenkins:
 
     """ Report the test case stats of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
-        """
+    """
     def reportByView(self, viewUrl):
 
         testCases = self.getTestCasesByView(viewUrl)
@@ -361,53 +355,6 @@ class Jenkins:
 
         return stats
 
-
-    """ Get the test case reports of the specified Jenkins build
-    """
-    def getTestCasesByBuild(self, buildUrl):
-
-        reporter = self.getReporterByBuild(buildUrl)
-
-        return reporter.getAllCases()
-
-    """ Get the test case reports of the specified Jenkins build
-        """
-    def getReporterByBuild(self, buildUrl):
-        reportUrl = urljoin(buildUrl, 'testReport')
-        testSuites = self.getJenkinsJson(reportUrl, 'suites')
-
-        testCases = []
-        for testSuite in testSuites:
-            for testCase in testSuite['cases']:
-                # set testClass
-                className = testCase['className']
-                testCase['testClass'] = className.split('.')[-1]
-
-                # set testMethod
-                methodName = testCase['name']
-                methodNameBracketIndex = methodName.rfind(' (')
-                if methodNameBracketIndex > -1:
-                    serialMethodNameBracketIndex = methodName.rfind(')')
-                    methodName = methodName[methodNameBracketIndex + 2: serialMethodNameBracketIndex]
-
-                testCase['testMethod'] = methodName
-
-                # set testCase
-                caseName = testCase['name']
-                if methodNameBracketIndex > -1:
-                    serialCountClosingBracketIndex = caseName.find("] ")
-                    caseName = caseName[serialCountClosingBracketIndex + 2: methodNameBracketIndex]
-
-                testCase["name"] = caseName
-                testCases.append(testCase)
-
-        print("        done getting cases for " + buildUrl)
-        reporter = JenkinsJobReporter()
-        reporter.latestBuildUrl = buildUrl
-        reporter.jobShortName = self.getJobShortName(buildUrl)
-        reporter.setCases(testCases)
-
-        return reporter
 
     def getJobShortName(self, jenkinsUrl):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
@@ -456,53 +403,7 @@ class Jenkins:
         return {}
 
 
-if (__name__ == '__main__'):
-    jenkins = Jenkins()
-
-    # viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-    # jobs = jenkins.getJobsOfView(viewUrl)
-    # pprint.pprint(jobs)
-
-    jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
-    # buildNumber = jenkins.getLatestBuildNumber(jobUrl)
-    # print(buildNumber)
 
 
-    #buildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-mars-tests-qa2-release-011/5/'
-    buildUrl='http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-bulk-bing-tests-qa2-release-011/1/'
-    #cases = jenkins.getTestCasesByBuild(buildUrl)
-    #pprint.pprint(cases)
 
-    viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-    # cases = jenkins.getTestCasesByView(viewUrl)
-    # pprint.pprint(cases)
 
-    developBuildUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/"
-    developJobUrl = "http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/"
-
-    # pprint.pprint(jenkins.getJobConfigs(developBuildUrl))
-    # pprint.pprint(jenkins.getJobConfigs(jobUrl))
-    #
-    # pprint.pprint(jenkins.getJobConfigs(buildUrl))
-    # pprint.pprint(jenkins.getJobConfigs(developJobUrl))
-    # print(jenkins.getJobConfigs('http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'))
-
-    releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
-    releaseViewUrlOld = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-
-    # reporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-google-bulk-campaign-tests-qa2-release-012/')
-    # reporter.start()
-    # reporter.join()
-    # reporter.getAllCases()
-
-    report = jenkins.compareViews(releaseViewUrlOld,releaseViewUrl)
-
-    # pprint.pprint(jenkins.getTestCasesByView(releaseViewUrl))
-
-    # reporters = jenkins.getReportersByView(releaseViewUrl)
-    #
-    # for reporter in reporters:
-    #     pprint.pprint(reporter.getReport())
-    # # pprint.pprint(jenkins.getReportersByView(releaseViewUrl))
-
-    #pprint.pprint(jenkins.reportByView(releaseViewUrl))
