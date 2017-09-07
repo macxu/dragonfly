@@ -2,17 +2,18 @@
 """Module for Jenkins data parsing"""
 from app.modules.jenkins.jenkins import Jenkins
 from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
-from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 
-jenkinsViews = Blueprint('jenkins', __name__, url_prefix='/api/jenkins')
+jenkinsAPI = Blueprint('jenkinsAPI', __name__, url_prefix='/api/jenkins')
+jenkinsPage = Blueprint('jenkinsPage', __name__, url_prefix='/jenkins')
 
-@jenkinsViews.route('/build', methods=['GET'])
+# API
+@jenkinsAPI.route('/build', methods=['GET'])
 # retrieves/adds polls from/to the database
 def getBuildData():
     if (not request.args.get('build')):
@@ -29,8 +30,9 @@ def getBuildData():
     return jsonify(report)
 
 
+# API
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
-@jenkinsViews.route('/jobs', methods=['GET'])
+@jenkinsAPI.route('/jobs', methods=['GET'])
 def getJobsByView():
     viewUrl = request.args['view']
     if (not viewUrl):
@@ -42,7 +44,8 @@ def getJobsByView():
     return jsonify(jobs)
 
 
-@jenkinsViews.route('/releases')
+# API
+@jenkinsAPI.route('/releases')
 def getJenkinsReleaseData():
 
     if (not request.args.get('release')):
@@ -60,3 +63,23 @@ def getJenkinsReleaseData():
         reports.append(reporter.getReport())
 
     return jsonify(reports)
+
+
+# Page
+@jenkinsPage.route('/')
+def jenkins():
+    if (request.args.get('release')):
+        return render_template("jenkins_release.html")
+    elif (request.args.get('build')):
+        jenkinsBuildUrl = request.args.get('build')
+        jenkins = Jenkins()
+        jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
+
+        reporter = JenkinsJobReporter(jobUrl)
+        reporter.load()
+        report = reporter.getReport()
+
+        reportJson = jsonify(report)
+        return render_template("jenkins_build.html", report = reportJson)
+    else:
+        return render_template("jenkins.html")

@@ -1,40 +1,22 @@
 from flask import Flask, render_template, jsonify, request
 
-from app.modules.jenkins.jenkins import Jenkins
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
 
 app = Flask(__name__)
 mongo = Mongo(app)
 
-from app.modules.jenkins.views import jenkinsViews
+# Jenkins APIs
+from app.modules.jenkins.views import jenkinsAPI
+app.register_blueprint(jenkinsAPI)
 
-app.register_blueprint(jenkinsViews)
+# Jenkins Pages
+from app.modules.jenkins.views import jenkinsPage
+app.register_blueprint(jenkinsPage)
 
 @app.route('/')
 def index():
     return render_template("index.html")
-
-@app.route('/jenkins')
-def jenkins():
-    if (request.args.get('release')):
-        return render_template("jenkins_release.html")
-    elif (request.args.get('build')):
-        jenkinsBuildUrl = request.args.get('build')
-        jenkins = Jenkins()
-        jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
-
-        reporter = JenkinsJobReporter(jobUrl)
-        reporter.load()
-        report = reporter.getReport()
-
-        reportJson = jsonify(report)
-        return render_template("jenkins_build.html", report=reportJson)
-    else:
-        return render_template("jenkins.html")
-
-
 
 @app.route('/job')
 def jobHistory():
@@ -46,11 +28,6 @@ def getJenkinsReleaseStats():
 
     stats = mongo.getReleasesStats()
     return jsonify(stats)
-
-
-
-
-
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
