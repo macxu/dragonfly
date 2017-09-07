@@ -20,8 +20,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="/static/js/jquery.js"></script>
 
     <script src="/static/js/bootstrap.min.js"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
 </head>
@@ -46,10 +44,48 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 <div class="panel panel-primary">
                   <div class="panel-heading">Job Summary</div>
                   <div class="panel-body">
-                      <a href="#" class="btn btn-info" role="button">Link Button</a>
 
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                        <a href="#" id='linkJenkins' class="btn btn-default" role="button"></a>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Passed</a>
+                                        <a href="#" id='linkPassedCount' class="btn btn-default block" role="button">0</a>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Failed</a>
+                                        <a href="#" id='linkFailedCount' class="btn btn-default" role="button">0</a>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Skipped</a>
+                                        <a href="#" id='linkSkippedCount' class="btn btn-default" role="button">0</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="row" id="divPiePassRate" style="height:100%">
+                                </div>
+                            </div>
+                        </div>
                   </div>
                 </div>
+
+
 
                 <div class="panel panel-success">
                   <div class="panel-heading">Test Cases Passed</div>
@@ -66,11 +102,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         </div>
     </div>
 </div>
-
-<script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
-<script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
-
-
 
 <script>
 
@@ -116,18 +147,74 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 <script>
     function loadSummary(report) {
 
+        $('#linkJenkins').attr('href', report.build).attr('target', '_blank').text(report.build);
 
+        $('#linkPassedCount').text(report.cases.passed.length);
+        $('#linkFailedCount').text(report.cases.failed.length);
+        $('#linkSkippedCount').text(report.cases.skipped.length);
+
+
+        loadPassRateChart(report.cases);
+    }
+</script>
+
+<script>
+    function loadPassRateChart(cases) {
+
+        var myChart = echarts.init(document.getElementById('divPiePassRate'));
+
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data:['Passed','Failed','Skipped']
+            },
+            series: [
+                {
+                    name:'Cases Executed',
+                    type:'pie',
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'bottom'
+                        },
+                        emphasis: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '12',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:[
+                        {value: cases.passed.length, name:'Passed'},
+                        {value: cases.failed.length, name:'Failed'},
+                        {value: cases.skipped.length, name:'Skipped'}
+                    ]
+                }
+            ]
+        };
+
+        myChart.setOption(option);
     }
 </script>
 
 <script>
 
     function loadTestCases(rootContainer, cases) {
-        // <button type="button" class="btn btn-default btn-block">Button 2</button>
-
         // <a href="#" class="list-group-item">First item</a>
         $.each(cases, function( index, value ) {
-            console.log(value);
 
             var testCaseButton = $('<a></a>').attr('href', '#')
                 .addClass('list-group-item')
