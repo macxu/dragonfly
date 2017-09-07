@@ -4,7 +4,6 @@ from javalang.tree import BinaryOperation, Literal
 __author__    = "Copyright (c) 2017, Marin Software"
 __copyright__ = "Licensed under GPLv2 or later."
 
-import pprint
 import javalang
 
 """ Parser of a Java test class powered by JUnit
@@ -70,8 +69,11 @@ class TestClasser:
                         else:
                         # if it is not list it means it has multiple files as the test data
                             method['testData'] = []
-                            for csv in parameters.values:
-                                method['testData'].append(self.stringJoin(csv))
+                            if type(parameters) == Literal:
+                                method['testData'].append(self.stringJoin(parameters))
+                            else:
+                                for csv in parameters.values:
+                                    method['testData'].append(self.stringJoin(csv))
 
                         break
                 if method:
@@ -82,23 +84,9 @@ class TestClasser:
 
 
 
-if (__name__ == '__main__'):
 
 
 
-
-
-
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-google-pacman-tests/src/test/java/com/marin/qa/pacman/google/GooglePacmanCampaignTest.java'    # Has three string combined with '+'
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-metadataservice-contract-tests/src/test/java/com/marin/qa/metadataservice/ClientTests.java'
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-job-manager-service-tests/src/test/java/com/marin/qa/jobmanagerservice/GetJobByJobIdTest.java'
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-search2-urlb-google-tests/src/test/java/com/marin/qa/search2urlbgoogle/GoogleKeywordUrlbSettingDbTest.java'   # has ignore
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-repman-tests/src/test/java/com/marin/qa/repman/bing/BingRepmanExtraTests.java'   # @Test has been commented out
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-spark-etl-tests/src/test/java/com/marin/qa/sparketl/IncrementalFactSparkTest.java'
-    #testFile = '/Users/ssun/git/qe/int/tests/qe-trackingvalueparser-v2-tests/src/test/java/com/marin/qa/trackingvalueparser2/TrackingValueParserV2GoogleGroupsTest.java'
-    testClasser = TestClasser(testFile)
-    testMethods = testClasser.load()
-    pprint.pprint(testMethods)
 
 
 
