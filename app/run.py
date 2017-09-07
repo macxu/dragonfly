@@ -8,9 +8,9 @@ from app.modules.mongo import Mongo
 app = Flask(__name__)
 mongo = Mongo(app)
 
-from app.modules.jenkins.api import jenkinsAPI
+from app.modules.jenkins.views import jenkinsViews
 
-app.register_blueprint(jenkinsAPI)
+app.register_blueprint(jenkinsViews)
 
 @app.route('/')
 def index():

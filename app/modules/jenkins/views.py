@@ -10,10 +10,9 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 from flask import Blueprint, request, jsonify
 
-jenkinsAPI = Blueprint('api', 'api', url_prefix='/api/jenkins')
+jenkinsViews = Blueprint('jenkins', __name__, url_prefix='/api/jenkins')
 
-
-@jenkinsAPI.route('/build', methods=['GET'])
+@jenkinsViews.route('/build', methods=['GET'])
 # retrieves/adds polls from/to the database
 def getBuildData():
     if (not request.args.get('build')):
@@ -31,7 +30,7 @@ def getBuildData():
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
-@jenkinsAPI.route('/jobs', methods=['GET'])
+@jenkinsViews.route('/jobs', methods=['GET'])
 def getJobsByView():
     viewUrl = request.args['view']
     if (not viewUrl):
@@ -43,7 +42,7 @@ def getJobsByView():
     return jsonify(jobs)
 
 
-@jenkinsAPI.route('/releases')
+@jenkinsViews.route('/releases')
 def getJenkinsReleaseData():
 
     if (not request.args.get('release')):
