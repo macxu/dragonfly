@@ -2,10 +2,11 @@
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
-from app.modules.jenkins import Jenkins
-from app.modules.jenkinsJobReporter import JenkinsJobReporter
-
 import unittest
+
+from app.modules.jenkins.jenkins import Jenkins
+from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+
 
 class JenkinsTest(unittest.TestCase):
 

@@ -71,6 +71,8 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
             var passed = [];
             var failed = [];
+            var skipped = [];
+            var authored = [];
 
             for ( var i = 0; i < releaseDatas.length; i++ ) {
                 releaseData = releaseDatas[i];
@@ -79,16 +81,18 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
                 passed.unshift(releaseData['stats']['passed']);
                 failed.unshift(releaseData['stats']['failed']);
+                skipped.unshift(releaseData['stats']['skipped'])
+                authored.unshift(releaseData['stats']['authored'])
             }
 
-            loadChart(xCategories, passed, failed);
+            loadChart(xCategories, passed, failed, skipped, authored);
         });
     });
 </script>
 
 <script>
 
-    function loadChart(xCategoriesArray, passedArray, failedArray) {
+    function loadChart(xCategoriesArray, passedArray, failedArray, skippedArray, authoredArray) {
 
         var myChart = echarts.init(document.getElementById('divReleaseStat'));
 
@@ -100,7 +104,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 }
             },
             legend: {
-                data:['Cases Passed','Cases Failed', "Cases Authored"]
+                data:['Cases Passed','Cases Failed', 'Cases Skipped', "Cases Authored"]
             },
             grid: {
                 left: '3%',
@@ -123,22 +127,47 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 {
                     name:'Cases Passed',
                     type:'bar',
+                    barWidth : 50,
                     stack: 'executed',
                     data: passedArray,
                     itemStyle: {
                         normal: {
-                            color: 'green'
+                            color: '#1d6021'
                         }
                     }
                 },
                 {
                     name:'Cases Failed',
                     type:'bar',
+                    barWidth : 50,
                     stack: 'executed',
                     data:failedArray,
                     itemStyle: {
                         normal: {
-                            color: 'red'
+                            color: '#9b2412'
+                        }
+                    },
+                },
+                {
+                    name:'Cases Skipped',
+                    type:'bar',
+                    barWidth : 50,
+                    stack: 'executed',
+                    data: skippedArray,
+                    itemStyle: {
+                        normal: {
+                            color: '#ba7341'
+                        }
+                    },
+                },
+                {
+                    name:'Cases Authored',
+                    type:'bar',
+                    barWidth : 50,
+                    data: authoredArray,
+                    itemStyle: {
+                        normal: {
+                            color: '#2967a0'
                         }
                     },
                 }

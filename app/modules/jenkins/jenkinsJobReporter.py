@@ -34,6 +34,9 @@ class JenkinsJobReporter(threading.Thread):
         self.viewUrl = url
 
     def run(self):
+        self.load()
+
+    def load(self):
         self.getJobShortName()
         self.getLatestBuildInfo()
         if (self.latestBuildUrl):
@@ -162,4 +165,12 @@ class JenkinsJobReporter(threading.Thread):
         url = self.getJenkinsApiUrl(url)
         return self.rester.getJson(url, propertyKey)
 
+if (__name__ == '__main__'):
+    # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
+    # jenkinsReporter.getLatestBuildInfo()
 
+    jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
+    # jenkinsReporter.getLatestBuildInfo()
+    # jenkinsReporter.getTestCasesInfo()
+
+    jenkinsReporter.run()

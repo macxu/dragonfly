@@ -24,32 +24,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            var releaseNumber = getUrlParameter('release');
-            $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
-                loadChart(reports);
-            });
-        });
-    </script>
-
-    <script>
-        function getUrlParameter(sParam) {
-            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-                sURLVariables = sPageURL.split('&'),
-                sParameterName,
-                i;
-
-            for (i = 0; i < sURLVariables.length; i++) {
-                sParameterName = sURLVariables[i].split('=');
-
-                if (sParameterName[0] === sParam) {
-                    return sParameterName[1] === undefined ? true : sParameterName[1];
-                }
-            }
-        };
-    </script>
-
 </head>
 
 <body ng-controller="dragonflyJenkinsController">
@@ -77,6 +51,37 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 <script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
 <script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
 
+
+
+<script>
+
+    var reportsMap = {};
+
+    $(document).ready(function() {
+        var releaseNumber = getUrlParameter('release');
+        $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
+            loadChart(reports);
+        });
+    });
+</script>
+
+<script>
+    function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+</script>
+
 <script>
 
     function loadChart(reports) {
@@ -93,6 +98,8 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             passedCaseCountArray.unshift(report['cases']['passed'].length);
             failedcaseCountArray.unshift(report['cases']['failed'].length);
 
+            // save it for later usage convenience
+            reportsMap[report['job']] = report;
         }
 
         var myChart = echarts.init(document.getElementById('divReleaseStat'));
@@ -114,7 +121,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 containLabel: true
             },
             xAxis:  {
-                type: 'value'
+                type: 'value',
+
+                // Enable mouse event
+                silent: false
             },
             yAxis: {
                 type: 'category',
@@ -159,7 +169,13 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         };
 
         myChart.on('click', function (params) {
-           console.log(params.name);
+          // Make sure event from target axis
+
+          var clickedProjectName = params.name;
+          var clickedReport = reportsMap[clickedProjectName];
+
+            window.open('/jenkins?build=' + clickedReport['build'], '_blank');
+
         });
 
         myChart.setOption(option);
