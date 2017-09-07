@@ -20,8 +20,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="/static/js/jquery.js"></script>
 
     <script src="/static/js/bootstrap.min.js"></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
 </head>
@@ -46,10 +44,45 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 <div class="panel panel-primary">
                   <div class="panel-heading">Job Summary</div>
                   <div class="panel-body">
-                      <a href="#" class="btn btn-info" role="button">Link Button</a>
 
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="row" id="divPiePassRate" style="height:100%">
+                                </div>
+                            </div>
+                        </div>
                   </div>
                 </div>
+
+
 
                 <div class="panel panel-success">
                   <div class="panel-heading">Test Cases Passed</div>
@@ -66,11 +99,6 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         </div>
     </div>
 </div>
-
-<script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
-<script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
-
-
 
 <script>
 
@@ -116,6 +144,62 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 <script>
     function loadSummary(report) {
 
+        loadPassRateChart(report);
+    }
+</script>
+
+<script>
+    function loadPassRateChart(report) {
+
+        var myChart = echarts.init(document.getElementById('divPiePassRate'));
+
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b}: {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+            },
+            series: [
+                {
+                    name:'访问来源',
+                    type:'pie',
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        normal: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            show: true,
+                            textStyle: {
+                                fontSize: '30',
+                                fontWeight: 'bold'
+                            }
+                        }
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                    data:[
+                        {value:335, name:'直接访问'},
+                        {value:310, name:'邮件营销'},
+                        {value:234, name:'联盟广告'},
+                        {value:135, name:'视频广告'},
+                        {value:1548, name:'搜索引擎'}
+                    ]
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+
 
     }
 </script>
@@ -123,11 +207,8 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 <script>
 
     function loadTestCases(rootContainer, cases) {
-        // <button type="button" class="btn btn-default btn-block">Button 2</button>
-
         // <a href="#" class="list-group-item">First item</a>
         $.each(cases, function( index, value ) {
-            console.log(value);
 
             var testCaseButton = $('<a></a>').attr('href', '#')
                 .addClass('list-group-item')
