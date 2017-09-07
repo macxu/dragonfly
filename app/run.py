@@ -1,7 +1,7 @@
-from flask import Flask, render_template, jsonify, request, json
+from flask import Flask, render_template, jsonify, request
 
-from app.modules.jenkins import Jenkins
-from app.modules.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkins import Jenkins
+from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
 

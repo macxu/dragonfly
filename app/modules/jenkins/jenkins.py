@@ -1,6 +1,6 @@
 
 """Module for Jenkins data parsing"""
-from app.modules.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
 from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software>"
