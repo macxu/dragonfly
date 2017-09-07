@@ -46,35 +46,38 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                   <div class="panel-body">
 
                         <div class="row">
-                            <div class="col-sm-9">
+                            <div class="col-sm-8">
                                 <div class="row">
                                     <div class="panel panel-default">
                                         <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                        <a href="#" id='linkJenkins' class="btn btn-default" role="button"></a>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="panel panel-default">
-                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                        <a href="#" class="btn btn-info" role="button">Passed</a>
+                                        <a href="#" id='linkPassedCount' class="btn btn-default block" role="button">0</a>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="panel panel-default">
-                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                        <a href="#" class="btn btn-info" role="button">Failed</a>
+                                        <a href="#" id='linkFailedCount' class="btn btn-default" role="button">0</a>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="panel panel-default">
-                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
+                                        <a href="#" class="btn btn-info" role="button">Skipped</a>
+                                        <a href="#" id='linkSkippedCount' class="btn btn-default" role="button">0</a>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="panel panel-default">
-                                        <a href="#" class="btn btn-info" role="button">Jenkins URL</a>
-                                    </div>
-                                </div>
+
                             </div>
 
-                            <div class="col-sm-3">
+                            <div class="col-sm-4">
                                 <div class="row" id="divPiePassRate" style="height:100%">
                                 </div>
                             </div>
@@ -144,12 +147,19 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 <script>
     function loadSummary(report) {
 
-        loadPassRateChart(report);
+        $('#linkJenkins').attr('href', report.build).attr('target', '_blank').text(report.build);
+
+        $('#linkPassedCount').text(report.cases.passed.length);
+        $('#linkFailedCount').text(report.cases.failed.length);
+        $('#linkSkippedCount').text(report.cases.skipped.length);
+
+
+        loadPassRateChart(report.cases);
     }
 </script>
 
 <script>
-    function loadPassRateChart(report) {
+    function loadPassRateChart(cases) {
 
         var myChart = echarts.init(document.getElementById('divPiePassRate'));
 
@@ -161,23 +171,23 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             legend: {
                 orient: 'vertical',
                 x: 'left',
-                data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                data:['Passed','Failed','Skipped']
             },
             series: [
                 {
-                    name:'访问来源',
+                    name:'Cases Executed',
                     type:'pie',
                     radius: ['50%', '70%'],
                     avoidLabelOverlap: false,
                     label: {
                         normal: {
                             show: false,
-                            position: 'center'
+                            position: 'bottom'
                         },
                         emphasis: {
                             show: true,
                             textStyle: {
-                                fontSize: '30',
+                                fontSize: '12',
                                 fontWeight: 'bold'
                             }
                         }
@@ -188,19 +198,15 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                         }
                     },
                     data:[
-                        {value:335, name:'直接访问'},
-                        {value:310, name:'邮件营销'},
-                        {value:234, name:'联盟广告'},
-                        {value:135, name:'视频广告'},
-                        {value:1548, name:'搜索引擎'}
+                        {value: cases.passed.length, name:'Passed'},
+                        {value: cases.failed.length, name:'Failed'},
+                        {value: cases.skipped.length, name:'Skipped'}
                     ]
                 }
             ]
         };
 
         myChart.setOption(option);
-
-
     }
 </script>
 
