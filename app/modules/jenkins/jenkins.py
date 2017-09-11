@@ -10,7 +10,6 @@ __copyright__ = "Licensed under GPLv2 or later."
 import requests
 import xml.dom.minidom as elements
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 import re
 
 class Jenkins:
