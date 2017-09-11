@@ -58,9 +58,9 @@ def getJenkinsReleaseData():
     reports = []
 
     jenkins = Jenkins()
-    reporters = jenkins.getReportersByView(viewUrl)
-    for reporter in reporters:
-        reports.append(reporter.getReport())
+    jobs = jenkins.getJobsByView(viewUrl)
+    for job in jobs:
+        reports.append(job.getReport())
 
     return jsonify(reports)
 

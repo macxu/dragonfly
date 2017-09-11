@@ -352,7 +352,7 @@ class Jenkins:
     """ Get the test case reports of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
         """
-    def getReportersByView(self, viewUrl):
+    def getJobsByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
 
         jobsCount = len(jobs)
