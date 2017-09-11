@@ -24,7 +24,7 @@ class JenkinsTest(unittest.TestCase):
         jobUrl = 'http://ci.marinsw.net/job/qe-costrev-google-cost-tests-qa2-release-009/'
         jobFound = False
         for job in jobs:
-            if (job['url'] == jobUrl):
+            if (job.getUrl() == jobUrl):
                 jobFound = True
                 break
         self.assertTrue(jobFound, "costrev google job NOT found")
@@ -61,7 +61,7 @@ class JenkinsTest(unittest.TestCase):
         reporter5.casesSkipped = [None]
         reporters.append(reporter5)
 
-        actual = self.jenkins.sortReporters(reporters)
+        actual = self.jenkins.sortJobs(reporters)
 
         expected = [reporter5, reporter4, reporter2, reporter3, reporter1]
 
@@ -73,21 +73,21 @@ class JenkinsTest(unittest.TestCase):
         newViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
 
         report = self.jenkins.compareViews(oldViewUrl, newViewUrl)
-        self.assertEqual(len(report['addedJobs']), 0, 'Same view should has no added jobs')
-        self.assertEqual(len(report['deletedJobs']), 0, 'Same view should has no deleted jobs')
-        self.assertEqual(len(report['test case']['deletedCases']), 0, 'Same view should has no deleted test cases')
-        self.assertEqual(len(report['test case']['addedCases']), 0, 'Same view should has no added test cases')
+        self.assertEqual(len(report['added']), 0, 'Same view should has no added jobs')
+        self.assertEqual(len(report['deleted']), 0, 'Same view should has no deleted jobs')
+        # self.assertEqual(len(report['test case']['deletedCases']), 0, 'Same view should has no deleted test cases')
+        # self.assertEqual(len(report['test case']['addedCases']), 0, 'Same view should has no added test cases')
 
     def test_compareViews(self):
         oldViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-010/view/Tests/'
         newViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
 
         report = self.jenkins.compareViews(oldViewUrl, newViewUrl)
-        self.assertEqual(len(report['deletedJobs']), 7, 'Should 7 jobs be deleted, actual is '+str(len(report['deletedJobs'])))
-        self.assertEqual(len(report['addedJobs']), 16, 'Should 16 jobs be added, acutal is '+str(len(report['addedJobs'])))
+        self.assertEqual(len(report['deleted']), 7, 'Should 7 jobs be deleted, actual is '+str(len(report['deleted'])))
+        self.assertEqual(len(report['added']), 16, 'Should 16 jobs be added, actual is '+str(len(report['added'])))
 
-        self.assertEqual(len(report['test case']['addedCases']), 112,'Should 112 test cases be added, actual is '+str(len(report['test case']['addedCases'])))
-        self.assertEqual(len(report['test case']['deletedCases']), 94, 'Should 16 test cases be deleted, acutal is ' + str(len(report['test case']['deletedCases'])))
+        # self.assertEqual(len(report['test case']['addedCases']), 112,'Should 112 test cases be added, actual is '+str(len(report['test case']['addedCases'])))
+        # self.assertEqual(len(report['test case']['deletedCases']), 94, 'Should 16 test cases be deleted, acutal is ' + str(len(report['test case']['deletedCases'])))
 
     def test_findJobsWithSameShortName(self):
         oldJobs=[
