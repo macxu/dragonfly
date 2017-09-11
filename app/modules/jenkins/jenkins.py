@@ -30,6 +30,7 @@ class Jenkins:
         for jobObject in jobObjects:
             jobUrl = jobObject['url']
             job = JenkinsJob(jobUrl)
+            job.setViewUrl(viewUrl)
             jobs.append(job)
 
         return jobs
@@ -39,7 +40,7 @@ class Jenkins:
 
         jobMap = {}
         for job in jobs:
-            jobMap[job.getJobShortName()] = job
+            jobMap[job.setJobShortName()] = job
 
         return jobMap
 
