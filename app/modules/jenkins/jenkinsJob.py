@@ -11,7 +11,7 @@ import pprint
 from urllib.parse import urljoin
 
 
-class JenkinsJobReporter(threading.Thread):
+class JenkinsJob(threading.Thread):
 
     def __init__(self, jobUrl=''):
         threading.Thread.__init__(self)
@@ -169,8 +169,8 @@ if (__name__ == '__main__'):
     # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
 
-    jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
+    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
     # jenkinsReporter.getTestCasesInfo()
 
-    jenkinsReporter.run()
+    jenkinsJob.run()

@@ -5,7 +5,7 @@ __copyright__ = "Licensed under GPLv2 or later."
 import unittest
 
 from app.modules.jenkins.jenkins import Jenkins
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJob import JenkinsJob
 
 
 class JenkinsTest(unittest.TestCase):
@@ -31,31 +31,31 @@ class JenkinsTest(unittest.TestCase):
 
     def test_sortedReportors(self):
         reporters = []
-        reporter1 = JenkinsJobReporter()
+        reporter1 = JenkinsJob()
         reporter1.casesFailed = []
         reporter1.casesPassed = []
         reporter1.casesSkipped = [None]
         reporters.append(reporter1)
 
-        reporter2 = JenkinsJobReporter()
+        reporter2 = JenkinsJob()
         reporter2.casesFailed = [None]*2
         reporter2.casesPassed = [None]*2
         reporters.append(reporter2)
 
-        reporter3 = JenkinsJobReporter()
+        reporter3 = JenkinsJob()
 
         reporter3.casesFailed = [None]*1
         reporter3.casesPassed = [None]*2
         reporter3.casesSkipped = [None]
         reporters.append(reporter3)
 
-        reporter4 = JenkinsJobReporter()
+        reporter4 = JenkinsJob()
 
         reporter4.casesFailed = [None]
         reporter4.casesPassed = [None]*3
         reporters.append(reporter4)
 
-        reporter5 = JenkinsJobReporter()
+        reporter5 = JenkinsJob()
         reporter5.casesFailed = [None]
         reporter5.casesPassed = [None]*3
         reporter5.casesSkipped = [None]

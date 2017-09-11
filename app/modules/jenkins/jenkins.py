@@ -1,6 +1,6 @@
 
 """Module for Jenkins data parsing"""
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJob import JenkinsJob
 from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software>"
@@ -235,13 +235,13 @@ class Jenkins:
         for jobTurple in sameJobs:
             # Get old job test cases
 
-            oldJobReporter = JenkinsJobReporter(jobTurple[0]['url'])
+            oldJobReporter = JenkinsJob(jobTurple[0]['url'])
             oldJobReporter.start()
 
             oldJobReporters.append(oldJobReporter)
 
             # Get new job test cases
-            newJobReporter = JenkinsJobReporter(jobTurple[1]['url'])
+            newJobReporter = JenkinsJob(jobTurple[1]['url'])
             newJobReporter.start()
 
             newJobReporters.append(newJobReporter)
@@ -285,7 +285,7 @@ class Jenkins:
             jobUrl = job["url"]
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
 
-            jobHunter = JenkinsJobReporter(jobUrl)
+            jobHunter = JenkinsJob(jobUrl)
             jobHunters.append(jobHunter)
             jobHunter.start()
 
@@ -324,7 +324,7 @@ class Jenkins:
             jobUrl = job["url"]
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
 
-            reporter = JenkinsJobReporter(jobUrl)
+            reporter = JenkinsJob(jobUrl)
             reporter.setViewUrl(viewUrl)
             reporter.start()
             reporters.append(reporter)
