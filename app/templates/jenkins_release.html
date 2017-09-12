@@ -41,8 +41,22 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         <div class="container-fluid">
             <!-- Page Heading-->
 
-            <div class="container" id="divReleaseStat" style="height: 100%; min-height:2000px">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="panel panel-default">
+                            <a id="linkJenkinsView" href="http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/view/Tests/" target="_blank" class="btn btn-info" role="button">Jenkins View</a>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="container" id="divReleaseStat" style="height: 3000px; min-height:3000px"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+
 
         </div>
     </div>
@@ -128,7 +142,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             },
             yAxis: {
                 type: 'category',
-                data: jobNames
+                data: jobNames,
+                labelFontStyle: "arial",
+                labelFontSize: 20,
             },
             series: [
                 {
