@@ -47,6 +47,15 @@ class JenkinsJob(threading.Thread):
     def getUrl(self):
         return self.jobUrl
 
+    """ Get the latest build number of the job
+            If the URL is not of a job, throw exception
+            If there is no build, return 0
+        """
+    def getLatestBuildNumber(self):
+        jobData = self.getJenkinsJson(self.jobUrl)
+        return jobData['lastCompletedBuild']['number']
+
+
     def setJobShortName(self):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
         # to:   bulk-bing-sync

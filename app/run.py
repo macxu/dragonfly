@@ -17,7 +17,7 @@ app.register_blueprint(jenkinsPage)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("jenkins.html")
 
 @app.route('/job')
 def jobHistory():
