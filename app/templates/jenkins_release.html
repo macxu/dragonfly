@@ -24,6 +24,28 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="/static/js/echarts.min.js"></script>
 
+    <style>
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
+
 </head>
 
 <body ng-controller="dragonflyJenkinsController">
@@ -44,13 +66,17 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             <div class="row">
                 <div class="col-sm-12">
                     <div class="row">
-                        <div class="panel panel-default">
+                        <div id='divLoader' class="panel panel-default loader">
                             <a id="linkJenkinsView" href="http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/view/Tests/" target="_blank" class="btn btn-info" role="button">Jenkins View</a>
                         </div>
 
                         <div class="panel panel-default">
                             <div class="container" id="divReleaseStat" style="height: 3000px; min-height:3000px; width: 100%"></div>
                         </div>
+
+                        <!--<div class="panel panel-default">-->
+                            <!--<div class="loader"></div>-->
+                        <!--</div>-->
                     </div>
 
                 </div>
@@ -72,6 +98,8 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     $(document).ready(function() {
         var releaseNumber = getUrlParameter('release');
         $.get( "/api/jenkins/releases?release=" + releaseNumber, function(reports) {
+
+            $('#divLoader').removeClass('loader');
             loadChart(reports);
         });
     });
