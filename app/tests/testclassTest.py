@@ -15,6 +15,7 @@ class TestClassTest(unittest.TestCase):
     def test_getTestMethods_fileParameter(self):
         self.assertEqual(TestClassTest.methods[0]['methodName'], 'test1', 'test1 not found')
         self.assertIn('test.json', TestClassTest.methods[0]['testData'], 'test data not found')
+
     def test_getTestMethods_method(self):
         self.assertEqual(TestClassTest.methods[1]['methodName'], 'test2', 'test2 not found')
         self.assertEqual(TestClassTest.methods[1]['method'], 'callMethod', 'test data not found')
@@ -31,11 +32,8 @@ class TestClassTest(unittest.TestCase):
         self.assertEqual(TestClassTest.methods[3]['methodName'], 'test4', 'test4 not found')
         self.assertIn('test.json, test2.json, test3.json', TestClassTest.methods[3]['testData'], 'test data not found')
 
-
     def test_getTestMethods_hasIgnore(self):
         self.assertFalse(any(d['methodName'] == 'test6' for d in TestClassTest.methods))
-
-
 
     def test_getTestMethods_commentedOut(self):
         self.assertFalse(any(d['methodName'] == 'test5' for d in TestClassTest.methods))

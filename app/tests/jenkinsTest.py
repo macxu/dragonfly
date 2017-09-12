@@ -116,14 +116,6 @@ class JenkinsTest(unittest.TestCase):
         buildNumber = self.jenkins.getLatestBuildNumber(jobUrl)
         self.assertEqual(buildNumber, 2, "Actual build number is " + str(buildNumber))
 
-    def test_getJobConfigs(self):
-        developBuildUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/14/'
-        config = self.jenkins.getJobConfigs(developBuildUrl)
-        developJobUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/job/qe-conversiontype-tests-develop/'
-        config = self.jenkins.getJobConfigs(developJobUrl)
-        releaseBuildUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011'
-        config = self.jenkins.getJobConfigs(releaseBuildUrl)
-
 
 if( __name__ =='__main__' ):
     unittest.main()
