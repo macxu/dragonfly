@@ -27,7 +27,7 @@ class JenkinsJob(threading.Thread):
         self.casesFailed = []
         self.casesPassed = []
         self.casesSkipped = []
-
+        self.user = {}
         self.rester = Rester()
 
     def setViewUrl(self, url):
@@ -39,6 +39,7 @@ class JenkinsJob(threading.Thread):
     def load(self):
         self.getJobShortName()
         self.getLatestBuildInfo()
+        self.getUser()
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
 
@@ -54,6 +55,18 @@ class JenkinsJob(threading.Thread):
 
         return self.jobShortName
 
+    def getUser(self):
+        if self.latestBuildUrl:
+            actions = self.getJenkinsJson(self.latestBuildUrl, 'actions')
+            for action in actions:
+                if ('causes') in action:
+                    for cause in action['causes']:
+                        if 'userName' in cause:
+                            self.user['name'] = cause['userName']
+                            self.user['id'] = cause['userId']
+                            break
+                    break
+
 
 
 
@@ -63,6 +76,8 @@ class JenkinsJob(threading.Thread):
 
         for testSuite in testSuites:
             for testCase in testSuite['cases']:
+                #set user
+                testCase['user'] = self.user
                 # set testClass
                 className = testCase['className']
                 testCase['testClass'] = className.split('.')[-1]
@@ -175,8 +190,10 @@ if (__name__ == '__main__'):
     # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
 
-    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
+    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
     # jenkinsReporter.getTestCasesInfo()
 
     jenkinsJob.run()
+
+
