@@ -65,6 +65,20 @@ def getJenkinsReleaseData():
     return jsonify(reports)
 
 
+# API
+@jenkinsAPI.route('/stat')
+def getJenkinsReleaseStat():
+
+    if (not request.args.get('view')):
+        return jsonify({})
+
+    viewUrl = request.args.get('view')
+    jenkins = Jenkins()
+
+    stats = jenkins.reportByView(viewUrl)
+    return jsonify(stats)
+
+
 # Page
 @jenkinsPage.route('/')
 def jenkins():

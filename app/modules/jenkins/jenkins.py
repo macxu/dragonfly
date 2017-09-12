@@ -11,12 +11,11 @@ import requests
 import xml.dom.minidom as elements
 from bs4 import BeautifulSoup
 import re
+from pprint import pprint
 
 class Jenkins:
 
-    """ TODO: need a better way to specify the Jenkins server to make it good for general use """
     def __init__(self):
-
         self.rester = Rester()
 
     """ Get the jobs of the specified Jenkins view URL  """
@@ -30,6 +29,7 @@ class Jenkins:
         for jobObject in jobObjects:
             jobUrl = jobObject['url']
             job = JenkinsJob(jobUrl)
+            job.setViewUrl(viewUrl)
             jobs.append(job)
 
         return jobs
@@ -42,14 +42,6 @@ class Jenkins:
             jobMap[job.getJobShortName()] = job
 
         return jobMap
-
-    """ Get the latest build number of the specified Jenkins job URL
-        If the URL is not of a job, throw exception
-        If there is no build, return 0
-    """
-    def getLatestBuildNumber(self, jobUrl):
-        jobData = self.getJenkinsJson(jobUrl)
-        return jobData['lastCompletedBuild']['number']
 
     """ Get the job configurations, including the git branch, environments etc.
         The response data are organized as key value pairs
@@ -241,7 +233,7 @@ class Jenkins:
                 jobDiffResult['deleted'][jobShortName] = job
             else:
                 jobDiffResult['matched'][jobShortName] = {}
-                jobDiffResult['matched'][jobShortName]['old'] = jobShortName
+                jobDiffResult['matched'][jobShortName]['old'] = job
                 jobDiffResult['matched'][jobShortName]['new'] = newJobs[jobShortName]
 
 
@@ -455,8 +447,10 @@ if (__name__ == '__main__'):
     jenkins = Jenkins()
 
     viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
-    jobs = jenkins.getJobMapsOfView(viewUrl)
-    print(jobs)
+    viewUrl2 = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
+
+    jenkins = Jenkins()
+    pprint(jenkins.reportByView('http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/view/Tests/'))
 
 
 

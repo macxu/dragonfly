@@ -21,6 +21,8 @@ class JenkinsJob(threading.Thread):
         self.viewUrl = ''
 
         self.jobShortName = jobUrl
+        self.setJobShortName()
+
         self.latestBuildUrl = ''
         self.latestBuildNumber = 0
 
@@ -37,7 +39,7 @@ class JenkinsJob(threading.Thread):
         self.load()
 
     def load(self):
-        self.getJobShortName()
+        self.setJobShortName()
         self.getLatestBuildInfo()
         self.getUser()
         if (self.latestBuildUrl):
@@ -46,14 +48,23 @@ class JenkinsJob(threading.Thread):
     def getUrl(self):
         return self.jobUrl
 
-    def getJobShortName(self):
+    """ Get the latest build number of the job
+            If the URL is not of a job, throw exception
+            If there is no build, return 0
+        """
+    def getLatestBuildNumber(self):
+        jobData = self.getJenkinsJson(self.jobUrl)
+        return jobData['lastCompletedBuild']['number']
+
+
+    def setJobShortName(self):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
         # to:   bulk-bing-sync
         matchObj = re.match(r'.*/job/qe-(.*)-test[s]?-.*', self.jobUrl, re.M | re.I)
         if (matchObj):
             self.jobShortName = matchObj.group(1)
-
-        return self.jobShortName
+        else:
+            self.jobShortName = self.jobUrl
 
     def getUser(self):
         if self.latestBuildUrl:
@@ -68,6 +79,8 @@ class JenkinsJob(threading.Thread):
                     break
 
 
+    def getJobShortName(self):
+        return self.jobShortName
 
 
     def getTestCasesInfo(self):
@@ -81,6 +94,12 @@ class JenkinsJob(threading.Thread):
                 # set testClass
                 className = testCase['className']
                 testCase['testClass'] = className.split('.')[-1]
+
+                testCase['view'] = self.viewUrl
+                testCase['job'] = self.jobUrl
+                testCase['jobShortName'] = self.jobShortName
+                testCase['build'] = self.latestBuildUrl
+                testCase['buildNumber'] = self.latestBuildNumber
 
                 # set testMethod
                 methodName = testCase['name']

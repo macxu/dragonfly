@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 
+from app.modules.jenkins.jenkins import Jenkins
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
 
@@ -16,7 +17,7 @@ app.register_blueprint(jenkinsPage)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("jenkins.html")
 
 @app.route('/job')
 def jobHistory():
@@ -28,6 +29,17 @@ def getJenkinsReleaseStats():
 
     stats = mongo.getReleasesStats()
     return jsonify(stats)
+
+@app.route('/api/mongo/jenkins', methods=['POST'])
+def mongoTestCasesByView():
+    viewUrl = request.args['view']
+    if (not viewUrl):
+        return jsonify({"error": "missing query arg of 'view'!"})
+
+    jenkins = Jenkins()
+    testCases = jenkins.getTestCasesByView(viewUrl)
+
+    return jsonify({})
 
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
