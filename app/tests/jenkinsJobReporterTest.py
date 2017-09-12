@@ -4,13 +4,13 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 import unittest
 
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJob import JenkinsJob
 
 
 class JenkinsJobReporterTest(unittest.TestCase):
 
     def test_jenkinsJobReporter(self):
-        jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-mars-tests-qa2-release-011/')
+        jenkinsReporter = JenkinsJob('http://ci.marinsw.net/job/qe-mars-tests-qa2-release-011/')
         jenkinsReporter.run()
 
         testCases = jenkinsReporter.getAllCases()

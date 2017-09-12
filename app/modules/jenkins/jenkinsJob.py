@@ -11,7 +11,7 @@ import pprint
 from urllib.parse import urljoin
 
 
-class JenkinsJobReporter(threading.Thread):
+class JenkinsJob(threading.Thread):
 
     def __init__(self, jobUrl=''):
         threading.Thread.__init__(self)
@@ -42,13 +42,19 @@ class JenkinsJobReporter(threading.Thread):
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
 
+    def getUrl(self):
+        return self.jobUrl
+
     def getJobShortName(self):
         # form: http://ci.marinsw.net/job/qe-bulk-bing-sync-tests-qa2-release-012/1
         # to:   bulk-bing-sync
         matchObj = re.match(r'.*/job/qe-(.*)-test[s]?-.*', self.jobUrl, re.M | re.I)
         if (matchObj):
             self.jobShortName = matchObj.group(1)
-            return
+
+        return self.jobShortName
+
+
 
 
     def getTestCasesInfo(self):
@@ -169,8 +175,8 @@ if (__name__ == '__main__'):
     # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
 
-    jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
+    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-google-bulk-bat-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
     # jenkinsReporter.getTestCasesInfo()
 
-    jenkinsReporter.run()
+    jenkinsJob.run()

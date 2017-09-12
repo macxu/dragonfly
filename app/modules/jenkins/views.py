@@ -1,7 +1,7 @@
 
 """Module for Jenkins data parsing"""
 from app.modules.jenkins.jenkins import Jenkins
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJob import JenkinsJob
 
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
@@ -23,7 +23,7 @@ def getBuildData():
     jenkins = Jenkins()
     jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
 
-    reporter = JenkinsJobReporter(jobUrl)
+    reporter = JenkinsJob(jobUrl)
     reporter.load()
     report = reporter.getReport()
 
@@ -58,9 +58,9 @@ def getJenkinsReleaseData():
     reports = []
 
     jenkins = Jenkins()
-    reporters = jenkins.getReportersByView(viewUrl)
-    for reporter in reporters:
-        reports.append(reporter.getReport())
+    jobs = jenkins.getJobsByView(viewUrl)
+    for job in jobs:
+        reports.append(job.getReport())
 
     return jsonify(reports)
 
@@ -75,7 +75,7 @@ def jenkins():
         jenkins = Jenkins()
         jobUrl = jenkins.getJobByBuild(jenkinsBuildUrl)
 
-        reporter = JenkinsJobReporter(jobUrl)
+        reporter = JenkinsJob(jobUrl)
         reporter.load()
         report = reporter.getReport()
 

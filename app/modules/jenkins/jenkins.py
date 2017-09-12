@@ -1,6 +1,6 @@
 
 """Module for Jenkins data parsing"""
-from app.modules.jenkins.jenkinsJobReporter import JenkinsJobReporter
+from app.modules.jenkins.jenkinsJob import JenkinsJob
 from app.modules.rester import Rester
 
 __author__    = "Copyright (c) 2017, Marin Software>"
@@ -10,7 +10,6 @@ __copyright__ = "Licensed under GPLv2 or later."
 import requests
 import xml.dom.minidom as elements
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 import re
 
 class Jenkins:
@@ -22,7 +21,27 @@ class Jenkins:
 
     """ Get the jobs of the specified Jenkins view URL  """
     def getJobsOfView(self, viewUrl):
-        return self.getJenkinsJson(viewUrl, "jobs")
+        jobObjects = self.getJenkinsJson(viewUrl, "jobs")
+        if (not jobObjects):
+            print("View has no jobs: " + viewUrl)
+            return []
+
+        jobs = []
+        for jobObject in jobObjects:
+            jobUrl = jobObject['url']
+            job = JenkinsJob(jobUrl)
+            jobs.append(job)
+
+        return jobs
+
+    def getJobMapsOfView(self, viewUrl):
+        jobs = self.getJobsOfView(viewUrl)
+
+        jobMap = {}
+        for job in jobs:
+            jobMap[job.getJobShortName()] = job
+
+        return jobMap
 
     """ Get the latest build number of the specified Jenkins job URL
         If the URL is not of a job, throw exception
@@ -208,19 +227,45 @@ class Jenkins:
     """
     def compareViews(self, oldViewUrl, newViewUrl):
         report = {}
-        oldJobs = self.getJobsOfView(oldViewUrl)
-        newJobs = self.getJobsOfView(newViewUrl)
-        sameJobs = self.findJobsWithSameShortName(oldJobs, newJobs)
 
-        deletedJobs = [ job for job in oldJobs if job not in [ jobTurple[0] for jobTurple in sameJobs ]]
-        report["deletedJobs"] = deletedJobs
+        oldJobs = self.getJobMapsOfView(oldViewUrl)
+        newJobs = self.getJobMapsOfView(newViewUrl)
 
-        addedJobs = [ job for job in newJobs if job not in [ jobTurple[1] for jobTurple in sameJobs ]]
-        report["addedJobs"] = addedJobs
+        jobDiffResult = {
+            "matched": {},
+            "deleted": {},
+            "added":   {}
+        }
+        for jobShortName, job in oldJobs.items():
+            if (jobShortName not in newJobs):
+                jobDiffResult['deleted'][jobShortName] = job
+            else:
+                jobDiffResult['matched'][jobShortName] = {}
+                jobDiffResult['matched'][jobShortName]['old'] = jobShortName
+                jobDiffResult['matched'][jobShortName]['new'] = newJobs[jobShortName]
 
-        report["test case"] = self.compareTestCases(sameJobs)
 
-        return report
+        for jobShortName, job in newJobs.items():
+            if (jobShortName not in oldJobs):
+                jobDiffResult['added'][jobShortName] = job
+
+        return jobDiffResult
+
+        #
+        # sameJobs = self.findJobsWithSameShortName(oldJobs, newJobs)
+        #
+        # deletedJobs = [ job for job in oldJobs if job not in [ jobTurple[0] for jobTurple in sameJobs ]]
+        # report["deletedJobs"] = deletedJobs
+        #
+        # addedJobs = [ job for job in newJobs if job not in [ jobTurple[1] for jobTurple in sameJobs ]]
+        # report["addedJobs"] = addedJobs
+        #
+        # report["test case"] = self.compareTestCases(sameJobs)
+        #
+        # return report
+
+
+
 
     """ Get the test cases difference between same job in the different view
         sameJobs is a turple, left is old job, right is new job
@@ -235,13 +280,13 @@ class Jenkins:
         for jobTurple in sameJobs:
             # Get old job test cases
 
-            oldJobReporter = JenkinsJobReporter(jobTurple[0]['url'])
+            oldJobReporter = JenkinsJob(jobTurple[0]['url'])
             oldJobReporter.start()
 
             oldJobReporters.append(oldJobReporter)
 
             # Get new job test cases
-            newJobReporter = JenkinsJobReporter(jobTurple[1]['url'])
+            newJobReporter = JenkinsJob(jobTurple[1]['url'])
             newJobReporter.start()
 
             newJobReporters.append(newJobReporter)
@@ -279,22 +324,18 @@ class Jenkins:
         jobsCount = len(jobs)
         jobIndex = 0
 
-        jobHunters = []
         for job in jobs:
             jobIndex += 1
-            jobUrl = job["url"]
-            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job.getUrl())
 
-            jobHunter = JenkinsJobReporter(jobUrl)
-            jobHunters.append(jobHunter)
-            jobHunter.start()
+            job.start()
 
-        for jobHunter in jobHunters:
-            jobHunter.join()
+        for job in jobs:
+            job.join()
 
         testCases = []
-        for jobHunter in jobHunters:
-            testCases += jobHunter.getAllCases()
+        for job in jobs:
+            testCases += job.getAllCases()
 
         return testCases
 
@@ -303,15 +344,15 @@ class Jenkins:
         1. number of total test cases being executed, desc
         2. number of passed cases, desc 
     """
-    def sortReporters(self, reporters):
-        reporters = sorted(reporters, key = lambda k: (len(k.getAllCases()), len(k.casesPassed)), reverse=True)
-        return reporters
+    def sortJobs(self, jobs):
+        jobs = sorted(jobs, key = lambda k: (len(k.getAllCases()), len(k.casesPassed)), reverse=True)
+        return jobs
 
 
     """ Get the test case reports of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
         """
-    def getReportersByView(self, viewUrl):
+    def getJobsByView(self, viewUrl):
         jobs = self.getJobsOfView(viewUrl)
 
         jobsCount = len(jobs)
@@ -321,19 +362,17 @@ class Jenkins:
         for job in jobs:
             jobIndex += 1
 
-            jobUrl = job["url"]
-            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
+            print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job.getUrl())
 
-            reporter = JenkinsJobReporter(jobUrl)
-            reporter.setViewUrl(viewUrl)
-            reporter.start()
-            reporters.append(reporter)
+            job.setViewUrl(viewUrl)
+            job.start()
+            reporters.append(job)
 
-        for reporter in reporters:
-            reporter.join()
+        for job in jobs:
+            job.join()
 
-        orderedReporters = self.sortReporters(reporters)
-        return orderedReporters
+        orderedJobs = self.sortJobs(jobs)
+        return orderedJobs
 
     """ Report the test case stats of the specified Jenkins view
             It's the joint result of all the jobs of the view, with test case reports of the last build of each job
@@ -412,7 +451,12 @@ class Jenkins:
         return {}
 
 
+if (__name__ == '__main__'):
+    jenkins = Jenkins()
 
+    viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+    jobs = jenkins.getJobMapsOfView(viewUrl)
+    print(jobs)
 
 
 
