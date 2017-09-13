@@ -7,9 +7,6 @@ __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
 
-import requests
-import xml.dom.minidom as elements
-from bs4 import BeautifulSoup
 import re
 from pprint import pprint
 
@@ -43,77 +40,6 @@ class Jenkins:
 
         return jobMap
 
-    """ Get the job configurations, including the git branch, environments etc.
-        The response data are organized as key value pairs
-    """
-    def getJobConfigs(self, jobOrBuildUrl):
-        if not jobOrBuildUrl.endswith("/"):
-            jobOrBuildUrl += "/"
-
-        if self.isBuild(jobOrBuildUrl):
-            targetUrl = "/".join(jobOrBuildUrl.split("/")[0:-2])
-            targetUrl += "/"
-        elif self.isJob(jobOrBuildUrl):
-            targetUrl = jobOrBuildUrl
-        else:
-            return {}
-
-        targetUrl += "config.xml"
-
-        response = requests.get(targetUrl)
-
-        if response.status_code != 200:
-            return {}
-
-        dom = elements.parseString(response.content).getElementsByTagName("targets")[0]
-        jobConfigString = dom.childNodes[0].nodeValue
-
-        resultConfig = {}
-        isRequireParamValue = False
-
-        for mvnCommandPart in jobConfigString.split("\n"):
-            if mvnCommandPart.startswith("-D"):
-                separator = mvnCommandPart.find("=")
-                resultConfig[mvnCommandPart[2:separator]] = mvnCommandPart[separator+1:]
-                isRequireParamValue = mvnCommandPart[separator+1:].startswith("$") or isRequireParamValue
-            else:
-                pass
-
-
-        if isRequireParamValue:
-            if self.isBuild(jobOrBuildUrl):
-                return self.__getBuildConfigParametersForGivenBuildUrl(jobOrBuildUrl, resultConfig)
-            elif self.isJob(jobOrBuildUrl):
-                return self.__getBuildConfigParametersForGivenBuildUrl(self.getLatestBuildUrl(jobOrBuildUrl), resultConfig)
-            else:
-                return {}
-
-        else:
-            return resultConfig
-
-    """ Get the job configurations, including the git branch, environments etc. for develop branch,
-           which requires to specify the build version
-    """
-    def __getBuildConfigParametersForGivenBuildUrl(self, buildUrl, protoConfig):
-
-        if protoConfig.__len__() == 0:
-            return {}
-
-        if not buildUrl.endswith("/"):
-            buildUrl += "/"
-        buildUrl += "parameters/"
-        responseForParam = requests.get(buildUrl)
-
-        if responseForParam.status_code != 200:
-            return {}
-
-        soup = BeautifulSoup(responseForParam.content, "html.parser")
-
-        for (propertyName, propertyValue) in protoConfig.items():
-            if propertyValue.startswith("$"):
-                protoConfig[propertyName] = soup.find('td', attrs={'class': "setting-name"}, text=propertyValue[1:]).nextSibling.input["value"]
-
-        return protoConfig
 
     """ Tell if the specified Jenkins URL is of a view
     """
@@ -427,20 +353,8 @@ class Jenkins:
     def getJenkinsJson(self, url, propertyKey=''):
         url = self.getJenkinsApiUrl(url)
 
-        response = requests.get(url)
-        if response.status_code != 200:
-            return {}
+        return self.rester.getJson(url, propertyKey)
 
-        jsonResponse = response.json()
-
-        if (propertyKey == ''):
-            return jsonResponse
-
-        if (propertyKey in jsonResponse):
-            return jsonResponse[propertyKey]
-
-        print("'" + propertyKey + "' is not a property of the response for url: " + url)
-        return {}
 
 
 if (__name__ == '__main__'):

@@ -58,4 +58,14 @@ class Rester(threading.Thread):
         print(propertyKey + " is not a property of the response for url: " + url)
         return {}
 
+    def getXml(self, url):
+
+        print(url)
+
+        response = requests.get(url)
+
+        if response.status_code != 200:
+            return {}
+        else:
+            return response.content
 

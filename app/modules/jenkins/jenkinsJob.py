@@ -9,6 +9,8 @@ import threading
 import re
 import pprint
 from urllib.parse import urljoin
+import xml.dom.minidom as elements
+
 
 
 class JenkinsJob(threading.Thread):
@@ -31,6 +33,7 @@ class JenkinsJob(threading.Thread):
         self.casesSkipped = []
         self.user = {}
         self.rester = Rester()
+        self.jobConfig = {}
 
     def setViewUrl(self, url):
         self.viewUrl = url
@@ -42,6 +45,7 @@ class JenkinsJob(threading.Thread):
         self.setJobShortName()
         self.getLatestBuildInfo()
         self.getUser()
+        self.getJobConfigs()
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
 
@@ -154,6 +158,52 @@ class JenkinsJob(threading.Thread):
         self.latestBuildUrl = lastCompletedBuild['url']
         return self.latestBuildUrl
 
+    """ Get the job configurations, including the git branch, environments etc.
+        The response data are organized as key value pairs.      
+        if some parameter is depended on build, we will get the build parameter
+    """
+    def getJobConfigs(self):
+        if not self.jobUrl.endswith("/"):
+            self.jobUrl += "/"
+
+        configUrl = self.jobUrl + "config.xml"
+
+        content = self.rester.getXml(configUrl)
+
+        if content == {}:
+            return {}
+
+        dom = elements.parseString(content).getElementsByTagName("targets")[0]
+        jobConfigString = dom.childNodes[0].nodeValue
+
+
+        isRequireParamValue = False
+
+        for mvnCommandPart in jobConfigString.split("\n"):
+            if mvnCommandPart.startswith("-D"):
+                separator = mvnCommandPart.find("=")
+                self.jobConfig[mvnCommandPart[2:separator]] = mvnCommandPart[separator+1:]
+                isRequireParamValue = mvnCommandPart[separator+1:].startswith("$") or isRequireParamValue
+
+        if isRequireParamValue:
+            parameter = self.getBuildParameter(self.latestBuildUrl)
+            for (propertyName, propertyValue) in self.jobConfig.items():
+                if propertyValue.startswith("$"):
+                        self.jobConfig[propertyName] = parameter[propertyValue[1:]]
+
+
+    """ Get the buils configurations, including the git branch, environments etc.
+    """
+    def getBuildParameter(self, buildUrl):
+
+        actions = self.getJenkinsJson(buildUrl, 'actions')
+        param = {}
+        for action in actions:
+            if 'parameters' in action:
+                for parameter in action['parameters']:
+                    param[parameter['name']] = parameter['value']
+                break
+        return param
 
     def getReport(self):
         report = {}
@@ -210,6 +260,7 @@ if (__name__ == '__main__'):
     # jenkinsReporter.getLatestBuildInfo()
 
     jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-qa2-release-012/')
+    #jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-develop/')
     # jenkinsReporter.getLatestBuildInfo()
     # jenkinsReporter.getTestCasesInfo()
 

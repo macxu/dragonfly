@@ -111,11 +111,6 @@ class JenkinsTest(unittest.TestCase):
          cases = self.jenkins.getTestCasesByView(viewUrl)
          self.assertEqual((len(cases)), 1134, "actual total test cases is " + str(len(cases)))
 
-    def test_getLatestBuildNumber(self):
-        jobUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/job/qe-audience-tests-qa2-release-011/'
-        buildNumber = self.jenkins.getLatestBuildNumber(jobUrl)
-        self.assertEqual(buildNumber, 2, "Actual build number is " + str(buildNumber))
-
 
 if( __name__ =='__main__' ):
     unittest.main()
