@@ -259,11 +259,10 @@ if (__name__ == '__main__'):
     # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
     # jenkinsReporter.getLatestBuildInfo()
 
-    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-qa2-release-012/')
-    #jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-develop/')
-    # jenkinsReporter.getLatestBuildInfo()
-    # jenkinsReporter.getTestCasesInfo()
 
-    jenkinsJob.run()
+    jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-develop/')
+    jenkinsJob.load
+
+
 
 
