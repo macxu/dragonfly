@@ -80,17 +80,7 @@ class Jenkins:
         return ''
 
 
-    """ Get the URL of the latest build of the specified Jenkins job
-    """
-    def getLatestBuildUrl(self, jobUrl):
-        builds = self.getJenkinsJson(jobUrl, 'builds')
-        if (not builds):
-            return ''
 
-        if (len(builds) == 0):
-            return ''
-
-        return self.getJenkinsJson(jobUrl, 'builds')[0]["url"]
 
     """ get the latest build urls by a view url
         the response is organized in key/value pair where the key is the job url and value as the build url
@@ -101,12 +91,13 @@ class Jenkins:
 
         jobsCount = len(jobs)
         jobIndex = 0
-
+        builds = {}
         resters = []
         for job in jobs:
             jobIndex += 1
-            jobUrl = job["url"]
+            jobUrl = job.jobUrl
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + jobUrl)
+
 
             jobApiUrl = self.getJenkinsApiUrl(jobUrl)
             jobRester = Rester(jobApiUrl, "builds")
@@ -114,11 +105,10 @@ class Jenkins:
             resters.append(jobRester)
             jobRester.start()
 
+
+
         for jobRester in resters:
             jobRester.join()
-
-        builds = {}
-        for jobRester in resters:
             resterResponse = jobRester.getResponse()
 
             if (not resterResponse or len(resterResponse) == 0):
@@ -245,14 +235,11 @@ class Jenkins:
         for job in jobs:
             jobIndex += 1
             print("[" + str(jobIndex) + "/" + str(jobsCount) + "]: " + job.getUrl())
-
             job.start()
-
-        for job in jobs:
-            job.join()
 
         testCases = []
         for job in jobs:
+            job.join()
             testCases += job.getAllCases()
 
         return testCases
@@ -364,6 +351,7 @@ if (__name__ == '__main__'):
     viewUrl2 = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-012-qa2/view/Tests/'
 
     jenkins = Jenkins()
+    jenkins.getLatestBuildUrlsByView(viewUrl)
     pprint(jenkins.reportByView('http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/view/Tests/'))
 
 

@@ -111,6 +111,13 @@ class JenkinsTest(unittest.TestCase):
          cases = self.jenkins.getTestCasesByView(viewUrl)
          self.assertEqual((len(cases)), 1134, "actual total test cases is " + str(len(cases)))
 
+    def test_getLatestBuilUrlsdByView(self):
+        viewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/'
+        jobBuildDic = self.jenkins.getLatestBuildUrlsByView(viewUrl)
+        checkJob = 'http://ci.marinsw.net/job/qe-costrev-bing-cost-tests-qa2-release-011/'
+        expectBuildUrl = 'http://ci.marinsw.net/job/qe-costrev-bing-cost-tests-qa2-release-011/3/'
+        self.assertEqual(jobBuildDic[checkJob], expectBuildUrl)
+
 
 if( __name__ =='__main__' ):
     unittest.main()
