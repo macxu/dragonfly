@@ -44,8 +44,8 @@ class JenkinsJob(threading.Thread):
     def load(self):
         self.setJobShortName()
         self.getLatestBuildInfo()
-        self.getUser()
-        self.getJobConfigs()
+        self.setUser()
+        self.setJobConfigs()
         if (self.latestBuildUrl):
             self.getTestCasesInfo()
 
@@ -70,7 +70,7 @@ class JenkinsJob(threading.Thread):
         else:
             self.jobShortName = self.jobUrl
 
-    def getUser(self):
+    def setUser(self):
         if self.latestBuildUrl:
             actions = self.getJenkinsJson(self.latestBuildUrl, 'actions')
             for action in actions:
@@ -82,6 +82,8 @@ class JenkinsJob(threading.Thread):
                             break
                     break
 
+    def getUser(self):
+        return self.user
 
     def getJobShortName(self):
         return self.jobShortName
@@ -104,6 +106,7 @@ class JenkinsJob(threading.Thread):
                 testCase['jobShortName'] = self.jobShortName
                 testCase['build'] = self.latestBuildUrl
                 testCase['buildNumber'] = self.latestBuildNumber
+                testCase['jobConfig'] = self.jobConfig
 
                 # set testMethod
                 methodName = testCase['name']
@@ -143,7 +146,7 @@ class JenkinsJob(threading.Thread):
         return url
 
     """ Get the URL of the latest build of the specified Jenkins job
-        """
+    """
     def getLatestBuildInfo(self):
         jobInfo = self.getJenkinsJson(self.jobUrl)
         if (not jobInfo):
@@ -162,7 +165,7 @@ class JenkinsJob(threading.Thread):
         The response data are organized as key value pairs.      
         if some parameter is depended on build, we will get the build parameter
     """
-    def getJobConfigs(self):
+    def setJobConfigs(self):
         if not self.jobUrl.endswith("/"):
             self.jobUrl += "/"
 
@@ -256,12 +259,9 @@ class JenkinsJob(threading.Thread):
         return self.rester.getJson(url, propertyKey)
 
 if (__name__ == '__main__'):
-    # jenkinsReporter = JenkinsJobReporter('http://ci.marinsw.net/job/qe-activity-log-service-tests-qa2-release-012/')
-    # jenkinsReporter.getLatestBuildInfo()
-
 
     jenkinsJob = JenkinsJob('http://ci.marinsw.net/job/qe-sso-tests-develop/')
-    jenkinsJob.load
+    jenkinsJob.run()
 
 
 

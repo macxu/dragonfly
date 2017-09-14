@@ -317,7 +317,6 @@ class Jenkins:
         if (not matchObj):
             return ''
 
-        jobName = matchObj.group(1)
         matchObj = re.match(r'.*/job/qe-(.*)-test[s]?-.*', jenkinsUrl, re.M | re.I)
 
         if (not matchObj):
