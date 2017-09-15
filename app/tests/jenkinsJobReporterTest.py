@@ -15,6 +15,20 @@ class JenkinsJobReporterTest(unittest.TestCase):
 
         testCases = jenkinsReporter.getAllCases()
         self.assertEqual(len(testCases), 441, "Total 441 test cases, actual is " + str(len(testCases)))
+        # Build Failed
+        jenkinsReporter = JenkinsJob('http://ci.marinsw.net/job/qe-costrev-google-cost-tests-qa2-release-007/')
+        jenkinsReporter.run()
+
+        testCases = jenkinsReporter.getAllCases()
+        self.assertListEqual(testCases, [])
+
+        # Job Not Run
+        jenkinsReporter = JenkinsJob('http://ci.marinsw.net/job/qe-google-bulk-account-unlink-tests-qa2-release-007/')
+        jenkinsReporter.run()
+
+        testCases = jenkinsReporter.getAllCases()
+        self.assertListEqual(testCases, [])
+
 
     def test_jenkinsJob_getUser(self):
         releaseJob = 'http://ci.marinsw.net/job/qe-sso-tests-qa2-release-011/'
@@ -28,6 +42,8 @@ class JenkinsJobReporterTest(unittest.TestCase):
         jenkinsJob = JenkinsJob(releaseJob)
         jenkinsJob.load()
         self.assertDictEqual({'it.test': 'BingCostTest', 'marin.env': 'qa2', 'marin.cluster': 'zod', 'BRANCH_VERSION': 'release-011-SNAPSHOT' }, jenkinsJob.jobConfig)
+
+
 
     def test_jenkinsJob_shortJobName(self):
         relaseseJob = 'http://ci.marinsw.net/job/qe-revenue-upload-validator-service-google-tests-qa2-release-010/'
@@ -58,6 +74,10 @@ class JenkinsJobReporterTest(unittest.TestCase):
         expectedUrl = 'http://ci.marinsw.net/job/qe-ui-column-selector-bubble-bat-tests-qa2-release-010/2/'
         self.assertEqual(actualUrl, expectedUrl)
 
+        releaseJob = 'http://ci.marinsw.net/job/qe-google-bulk-account-unlink-tests-qa2-release-007/'
+        jenkinsJob = JenkinsJob(releaseJob)
+        actualUrl = jenkinsJob.getLatestBuildInfo()
+        self.assertEqual(actualUrl, '')
 
 
 

@@ -191,7 +191,7 @@ class JenkinsJob(threading.Thread):
         if isRequireParamValue:
             parameter = self.getBuildParameter(self.latestBuildUrl)
             for (propertyName, propertyValue) in self.jobConfig.items():
-                if propertyValue.startswith("$"):
+                if propertyValue.startswith("$") and propertyValue[1:] in parameter:
                         self.jobConfig[propertyName] = parameter[propertyValue[1:]]
 
 

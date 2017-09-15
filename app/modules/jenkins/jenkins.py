@@ -53,11 +53,11 @@ class Jenkins:
     """
     def isJob(self, jenkinsUrl):
         if "job" in jenkinsUrl:
-            urlStringArray = jenkinsUrl.split("/")
-            urlStringArray.reverse()
-            return not (urlStringArray[1]).isdigit()
-        else:
-            return False
+            if self.isBuild(jenkinsUrl):
+                return False
+            else:
+                return True
+        return False
 
     """ Tell if the specified Jenkins URL is of a build
     """
@@ -250,7 +250,7 @@ class Jenkins:
         2. number of passed cases, desc 
     """
     def sortJobs(self, jobs):
-        jobs = sorted(jobs, key = lambda k: (len(k.getAllCases()), len(k.casesPassed)), reverse=True)
+        jobs = sorted(jobs, key=lambda k: (len(k.getAllCases()), len(k.casesPassed)), reverse=True)
         return jobs
 
 

@@ -118,6 +118,110 @@ class JenkinsTest(unittest.TestCase):
         expectBuildUrl = 'http://ci.marinsw.net/job/qe-costrev-bing-cost-tests-qa2-release-011/3/'
         self.assertEqual(jobBuildDic[checkJob], expectBuildUrl)
 
+    def test_isView(self):
+        # positive cases
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-010/view/Tests/'
+        self.assertTrue(self.jenkins.isView(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/'
+        self.assertTrue(self.jenkins.isView(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-007-labs03-labs03/'
+        self.assertTrue(self.jenkins.isView(releaseViewUrl))
+
+        developViewUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/'
+        self.assertTrue(self.jenkins.isView(developViewUrl))
+
+        # negative cases
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-revenue-bulk-upload-tests-qa2-release-011/'
+        self.assertFalse(self.jenkins.isView(releaseJobUrl))
+
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-column-selector-bubble-bat-tests-labs03-release-007/'
+        self.assertFalse(self.jenkins.isView(releaseJobUrl))
+
+        developJobUrl = 'http://ci.marinsw.net/job/qe-urlb-google-creative-tests-develop/'
+        self.assertFalse(self.jenkins.isView(developJobUrl))
+
+        releaseBuildUrl = 'http://ci.marinsw.net/job/qe-tvp-keyword-tests-labs03-release-007/'
+        self.assertFalse(self.jenkins.isView(releaseBuildUrl))
+
+        developBuildUrl = 'http://ci.marinsw.net/job/qe-searchetl-product-tests-develop/1/'
+        self.assertFalse(self.jenkins.isView(developBuildUrl))
+
+    def test_isJob(self):
+        # positive cases
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-revenue-bulk-upload-tests-qa2-release-011/'
+        self.assertTrue(self.jenkins.isJob(releaseJobUrl))
+
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-column-selector-bubble-bat-tests-labs03-release-007/'
+        self.assertTrue(self.jenkins.isJob(releaseJobUrl))
+
+        developJobUrl = 'http://ci.marinsw.net/job/qe-urlb-google-creative-tests-develop/'
+        self.assertTrue(self.jenkins.isJob(developJobUrl))
+
+        # negative cases
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-010/view/Tests/'
+        self.assertFalse(self.jenkins.isJob(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/'
+        self.assertFalse(self.jenkins.isJob(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-007-labs03-labs03/'
+        self.assertFalse(self.jenkins.isJob(releaseViewUrl))
+
+        developViewUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/'
+        self.assertFalse(self.jenkins.isJob(developViewUrl))
+
+        releaseBuildUrl = 'http://ci.marinsw.net/job/qe-tvp-keyword-tests-labs03-release-007/2/'
+        self.assertFalse(self.jenkins.isJob(releaseBuildUrl))
+
+        developBuildUrl = 'http://ci.marinsw.net/job/qe-searchetl-product-tests-develop/1/'
+        self.assertFalse(self.jenkins.isJob(developBuildUrl))
+
+    def test_isBuild(self):
+        # positive cases
+        releaseBuildUrl = 'http://ci.marinsw.net/job/qe-tvp-keyword-tests-labs03-release-007/2/'
+        self.assertTrue(self.jenkins.isBuild(releaseBuildUrl))
+
+        developBuildUrl = 'http://ci.marinsw.net/job/qe-searchetl-product-tests-develop/1/'
+        self.assertTrue(self.jenkins.isBuild(developBuildUrl))
+
+        # negative cases
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-010/view/Tests/'
+        self.assertFalse(self.jenkins.isBuild(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-013-qa2/'
+        self.assertFalse(self.jenkins.isBuild(releaseViewUrl))
+
+        releaseViewUrl = 'http://ci.marinsw.net/view/Qe/view/Release/view/release-007-labs03-labs03/'
+        self.assertFalse(self.jenkins.isBuild(releaseViewUrl))
+
+        developViewUrl = 'http://ci.marinsw.net/view/Qe/view/Develop/view/Tests/view/Microservices/'
+        self.assertFalse(self.jenkins.isBuild(developViewUrl))
+
+
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-revenue-bulk-upload-tests-qa2-release-011/'
+        self.assertFalse(self.jenkins.isBuild(releaseJobUrl))
+
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-column-selector-bubble-bat-tests-labs03-release-007/'
+        self.assertFalse(self.jenkins.isBuild(releaseJobUrl))
+
+        developJobUrl = 'http://ci.marinsw.net/job/qe-urlb-google-creative-tests-develop/'
+        self.assertFalse(self.jenkins.isBuild(developJobUrl))
+
+    def test_getJobByBuild(self):
+        releaseBuildUrl = 'http://ci.marinsw.net/job/qe-tvp-keyword-tests-labs03-release-007/2/'
+        actual = self.jenkins.getJobByBuild(releaseBuildUrl)
+        expected = 'http://ci.marinsw.net/job/qe-tvp-keyword-tests-labs03-release-007/'
+        self.assertEqual(actual, expected)
+
+        developBuildUrl = 'http://ci.marinsw.net/job/qe-searchetl-product-tests-develop/1/'
+        actual = self.jenkins.getJobByBuild(developBuildUrl)
+        expected = 'http://ci.marinsw.net/job/qe-searchetl-product-tests-develop/'
+        self.assertEqual(actual, expected)
+
+        releaseJobUrl = 'http://ci.marinsw.net/job/qe-ui-revenue-bulk-upload-tests-qa2-release-011/'
+        self.assertEqual(self.jenkins.getJobByBuild(releaseJobUrl), releaseJobUrl)
 
 if( __name__ =='__main__' ):
     unittest.main()
