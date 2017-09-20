@@ -20,42 +20,53 @@ class PrestoClient:
         self.conn = Py3PrestoConnection(self.host, self.user, self.catalog, self.port, self.schema, self.password)
 
     def query(self, sql):
-        return self.conn.run_query(sql)
+        # Return empty  when result is empty, otherwise when result is empty will report error
+        result = self.conn.run_query(sql, True)
+        # Convert the result from dataframe to list of dictionary
+        return result.T.to_dict()
 
-    def queryDmtCampaignDiscrepancy(self, clientIds='12654910'):
 
-        sql = "SELECT ";
-        sql += "campaigns.cltid AS client_id, ";
-        sql += "campaigns.pubid AS publisher_id, ";
-        sql += "campaigns.stts AS publisher_campaign_status, ";
-        sql += "campaigns.opstts AS publisher_campaign_operation_status, ";
+    def queryDmtCampaignDiscrepancy(self, clientIds='4338988'):
 
-        sql += "COUNT(*) AS campaign_count, ";
-        sql += "COUNT(CONCAT(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_total, ";
-        sql += "COUNT(DISTINCT concat(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_distinct, ";
-        sql += "COUNT(campaigns.id) AS id_count_total, ";
-        sql += "SUM(IF(campaigns.id IS null, 1, 0)) AS id_count_null, ";
-        sql += "COUNT(DISTINCT campaigns.id) AS id_count_distinct, ";
-        sql += "COUNT(DISTINCT ";
-        sql += "  CASE WHEN campaigns.extid IS null THEN ";
-        sql += "    campaigns.id ";
-        sql += "  END) AS ext_id_count_null, ";
+        if type(clientIds) == str:
+            clients = clientIds
+        elif type(clientIds) == list:
+            clients = ','.join(map(str, clientIds))
+        else:
+            return []
 
-        sql += "COUNT(campaigns.lgcyid) AS legacy_id_count, ";
-        sql += "SUM(IF(campaigns.lgcyid IS null, 1, 0)) AS legacy_id_count_null, ";
-        sql += "COUNT(distinct campaigns.lgcyid) AS legacy_id_count_distinct,";
+        sql = "SELECT "
+        sql += "campaigns.cltid AS client_id, "
+        sql += "campaigns.pubid AS publisher_id, "
+        sql += "campaigns.stts AS publisher_campaign_status, "
+        sql += "campaigns.opstts AS publisher_campaign_operation_status, "
 
-        sql += "CAST(SUM(campaigns.dailybudget) AS double)/1000000 AS budget_sum ";
+        sql += "COUNT(*) AS campaign_count, "
+        sql += "COUNT(CONCAT(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_total, "
+        sql += "COUNT(DISTINCT concat(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_distinct, "
+        sql += "COUNT(campaigns.id) AS id_count_total, "
+        sql += "SUM(IF(campaigns.id IS null, 1, 0)) AS id_count_null, "
+        sql += "COUNT(DISTINCT campaigns.id) AS id_count_distinct, "
+        sql += "COUNT(DISTINCT "
+        sql += "  CASE WHEN campaigns.extid IS null THEN "
+        sql += "    campaigns.id "
+        sql += "  END) AS ext_id_count_null, "
 
-        sql += "FROM campaigns ";
-        sql += "LEFT JOIN accounts ON campaigns.accid = accounts.id ";
+        sql += "COUNT(campaigns.lgcyid) AS legacy_id_count, "
+        sql += "SUM(IF(campaigns.lgcyid IS null, 1, 0)) AS legacy_id_count_null, "
+        sql += "COUNT(distinct campaigns.lgcyid) AS legacy_id_count_distinct,"
 
-        sql += "WHERE campaigns.cltid IN (%s) ";
+        sql += "CAST(SUM(campaigns.dailybudget) AS double)/1000000 AS budget_sum "
 
-        sql += "GROUP BY campaigns.cltid, ";
-        sql += "campaigns.pubid, ";
-        sql += "campaigns.stts, ";
-        sql += "campaigns.opstts";
+        sql += "FROM campaigns "
+        sql += "LEFT JOIN accounts ON campaigns.accid = accounts.id "
+
+        sql += "WHERE campaigns.cltid IN ({}) ".format(clients)
+
+        sql += "GROUP BY campaigns.cltid, "
+        sql += "campaigns.pubid, "
+        sql += "campaigns.stts, "
+        sql += "campaigns.opstts"
 
         return self.query(sql)
 
@@ -65,7 +76,9 @@ if (__name__ == '__main__'):
 
     dbClient = PrestoClient()
 
-    sql = 'SELECT * FROM campaigns LIMIT 2'
-    results = dbClient.query(sql)
+    results = dbClient.queryDmtCampaignDiscrepancy()
+    pprint(results)
+
+    results = dbClient.queryDmtCampaignDiscrepancy(['4338988', 1231])
     pprint(results)
 
