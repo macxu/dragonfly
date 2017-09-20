@@ -1,5 +1,6 @@
 """Module for MySql Client"""
 
+
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
@@ -7,6 +8,7 @@ __copyright__ = "Licensed under GPLv2 or later."
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from pprint import pprint
+from decimal import Decimal
 
 from flask import Flask
 
@@ -43,6 +45,11 @@ class MysqlClient:
         cursor = self.conn.cursor()
         cursor.execute(sql)
         fetchResult = cursor.fetchall()
+
+        for record in fetchResult:
+            for key, value in record.items():
+                if type(value) == Decimal:
+                    record[key] = float(value)
 
         return fetchResult
 
