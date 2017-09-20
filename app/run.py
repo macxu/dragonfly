@@ -3,9 +3,11 @@ from flask import Flask, render_template, jsonify, request
 from app.modules.jenkins.jenkins import Jenkins
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
+from app.modules.mysql import MysqlClient
 
 app = Flask(__name__)
 mongo = Mongo(app)
+mysql = MysqlClient(app)
 
 # Jenkins APIs
 from app.modules.jenkins.views import jenkinsAPI
@@ -62,12 +64,15 @@ def getTestDefinitions():
 
 @app.route('/api/dc/<client_id>')
 def getDcForClient(client_id):
+
     return jsonify({"clientId": client_id})
 
 @app.route('/api/dmt/mysql/<client_id>')
 def getDmtMysqlDiscrepancy(client_id):
 
-    return jsonify({"clientId": client_id})
+    data = mysql.queryDmtCampaignDiscrepancy(client_id)
+
+    return jsonify(data)
 
 @app.route('/api/dmt/presto/<client_id>')
 def getDmtPrestoDiscrepancy(client_id):
