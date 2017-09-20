@@ -60,6 +60,24 @@ def getTestDefinitions():
         return jsonify({"error": "'project' or 'file' must be specified in the query"})
 
 
+@app.route('/api/dc/<client_id>')
+def getDcForClient(client_id):
+    return jsonify({"clientId": client_id})
+
+@app.route('/api/dmt/mysql/<client_id>')
+def getDmtMysqlDiscrepancy(client_id):
+
+    return jsonify({"clientId": client_id})
+
+@app.route('/api/dmt/presto/<client_id>')
+def getDmtPrestoDiscrepancy(client_id):
+
+    return jsonify({"clientId": client_id})
+
+@app.route('/dmt')
+def getDmtDiscrepancyPage():
+    return render_template("dmt.html")
+
 
 # http://127.0.0.1:5000/jenkins/view/jobs?view=http://ci.marinsw.net/view/Qe/view/Release/view/release-011/view/Tests/
 @app.route('/api/test/projects')
