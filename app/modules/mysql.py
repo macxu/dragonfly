@@ -5,16 +5,18 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 # need to install module: Flask-MySQLdb===0.2.0
 from flaskext.mysql import MySQL
+from pymysql.cursors import DictCursor
+from pprint import pprint
+
 from flask import Flask
 
 class MysqlClient:
 
     def __init__(self, flaskApp=None):
 
-        self.mysql = MySQL()
-
         if (flaskApp == None):
             flaskApp = Flask(__name__)
+
 
         # flaskApp.config['MYSQL_DATABASE_USER'] = 'XXXXX'
         # flaskApp.config['MYSQL_DATABASE_PASSWORD'] = 'XXXXXXXX'
@@ -26,33 +28,33 @@ class MysqlClient:
         flaskApp.config['MYSQL_DATABASE_DB'] = 'marin'
         flaskApp.config['MYSQL_DATABASE_HOST'] = 'qa2-dbp-lv-103.labs.marinsw.net'
 
-        self.mysql.init_app(flaskApp)
+        self.flaskApp = flaskApp
+
+        self.mysql = MySQL(cursorclass=DictCursor)
+
+        self.mysql.init_app(self.flaskApp)
 
         self.conn = self.mysql.connect()
-        cursor = self.conn.cursor()
 
-        cursor.execute("SELECT * from publisher_campaigns LIMIT 2")
+    def query(self, sql):
+
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
         fetchResult = cursor.fetchall()
 
-        data = str(fetchResult)
+        return fetchResult
 
-        self.conn.close()
-
-        sdf= 0
-
-
-
-    """ Get the list of the test project names in the
-    """
-    def connect(self):
-        pass
-        # from flask_mysqldb import MySQL
-
-
+    def close(self):
+        if (self.conn):
+            self.conn.close()
 
 
 if (__name__ == '__main__'):
 
     mysqlClient = MysqlClient()
-    mysqlClient.connect()
+    results = mysqlClient.query("SELECT * from publisher_campaigns LIMIT 2")
+
+    pprint(results)
+
+    mysqlClient.close()
 
