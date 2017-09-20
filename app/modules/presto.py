@@ -24,15 +24,16 @@ class PrestoClient:
         #
         # self.conn.close()
 
-        host = 'prod-lex-prestocoordinator-lv-1.prod.marinsw.net'
-        user = 'mxu'
+        host = 'http://qa2-zod-prestocoordinator-lv-101.labs.marinsw.net'
+        user = 'qa2'
         catalog = 'hive'
         port = 8080
-        schema = 'prod'
+        schema = 'qa2'
         password = ''
 
-        conn = PrestoConnection(host, user, catalog, port, schema, password)
-        query = 'select * from campaigns limit 2'
+
+        conn = PrestoConnection(host, user, catalog,port, schema,password)
+        query = 'select * from creative_dims limit 2'
         results = conn.run_query(query)
 
         sdf = 0
