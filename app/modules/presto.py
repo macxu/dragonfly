@@ -22,6 +22,44 @@ class PrestoClient:
     def query(self, sql):
         return self.conn.run_query(sql)
 
+    def queryDmtCampaignDiscrepancy(self, clientIds='12654910'):
+
+        sql = "SELECT ";
+        sql += "campaigns.cltid AS client_id, ";
+        sql += "campaigns.pubid AS publisher_id, ";
+        sql += "campaigns.stts AS publisher_campaign_status, ";
+        sql += "campaigns.opstts AS publisher_campaign_operation_status, ";
+
+        sql += "COUNT(*) AS campaign_count, ";
+        sql += "COUNT(CONCAT(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_total, ";
+        sql += "COUNT(DISTINCT concat(accounts.extid,coalesce(campaigns.extid, '-'))) AS combined_ext_id_count_distinct, ";
+        sql += "COUNT(campaigns.id) AS id_count_total, ";
+        sql += "SUM(IF(campaigns.id IS null, 1, 0)) AS id_count_null, ";
+        sql += "COUNT(DISTINCT campaigns.id) AS id_count_distinct, ";
+        sql += "COUNT(DISTINCT ";
+        sql += "  CASE WHEN campaigns.extid IS null THEN ";
+        sql += "    campaigns.id ";
+        sql += "  END) AS ext_id_count_null, ";
+
+        sql += "COUNT(campaigns.lgcyid) AS legacy_id_count, ";
+        sql += "SUM(IF(campaigns.lgcyid IS null, 1, 0)) AS legacy_id_count_null, ";
+        sql += "COUNT(distinct campaigns.lgcyid) AS legacy_id_count_distinct,";
+
+        sql += "CAST(SUM(campaigns.dailybudget) AS double)/1000000 AS budget_sum ";
+
+        sql += "FROM campaigns ";
+        sql += "LEFT JOIN accounts ON campaigns.accid = accounts.id ";
+
+        sql += "WHERE campaigns.cltid IN (%s) ";
+
+        sql += "GROUP BY campaigns.cltid, ";
+        sql += "campaigns.pubid, ";
+        sql += "campaigns.stts, ";
+        sql += "campaigns.opstts";
+
+        return self.query(sql)
+
+
 
 if (__name__ == '__main__'):
 
