@@ -3,7 +3,7 @@
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
-from pypresto import PrestoConnection
+from app.modules.MyPrestoConnection import MyPrestoConnection
 
 
 class PrestoClient:
@@ -32,7 +32,7 @@ class PrestoClient:
         password = ''
 
 
-        conn = PrestoConnection(host, user, catalog,port, schema,password)
+        conn = MyPrestoConnection(host, user, catalog,port, schema,password)
         query = 'select * from creative_dims limit 2'
         results = conn.run_query(query)
 
