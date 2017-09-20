@@ -104,19 +104,23 @@ class MysqlClient:
         sql += "pc.publisher_campaign_status,"
         sql += "pc.publisher_campaign_operation_status;"
 
-        return self.query(sql)
+        results = self.query(sql)
+        return self.convertToMap(results)
+
+
+    def convertToMap(self, results):
+        map = {}
+        for result in results:
+            key = 'publisherId={}; status={}; opstatus={}'.format(
+                result['publisher_id'], result['status'], result['operational_status'])
+            map[key] = result
+        return map
 
 if (__name__ == '__main__'):
 
     mysqlClient = MysqlClient()
-    #results = mysqlClient.query("SELECT * from publisher_campaigns LIMIT 2")
 
-    #pprint(results)
-
-    results = mysqlClient.queryDmtCampaignDiscrepancy()
+    results = mysqlClient.queryDmtCampaignDiscrepancy(12654910)
     pprint(results)
-
-    results = mysqlClient.queryDmtCampaignDiscrepancy(['12654910', 123])
-
     mysqlClient.close()
 
