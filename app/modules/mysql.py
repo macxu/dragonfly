@@ -5,13 +5,15 @@ __copyright__ = "Licensed under GPLv2 or later."
 
 # need to install module: Flask-MySQLdb===0.2.0
 from flaskext.mysql import MySQL
+from pymysql.cursors import DictCursor
+
 from flask import Flask
 
 class MysqlClient:
 
     def __init__(self, flaskApp=None):
 
-        self.mysql = MySQL()
+        self.mysql = MySQL(cursorclass=DictCursor)
 
         if (flaskApp == None):
             flaskApp = Flask(__name__)
