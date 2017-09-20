@@ -1,13 +1,10 @@
-import os
 import time
 import pandas
-import requests
-from base64 import b64encode
 from copy import deepcopy as copy
-from requests.auth import HTTPBasicAuth
 from pypresto import PrestoConnection
 
-class MyPrestoConnection(PrestoConnection):
+
+class Py3PrestoConnection(PrestoConnection):
 
     def run_query(self,sql_query,ignore_empty=False) :
         response = self.send_query(sql_query)
