@@ -16,10 +16,15 @@ class MysqlClient:
         if (flaskApp == None):
             flaskApp = Flask(__name__)
 
-        flaskApp.config['MYSQL_DATABASE_USER'] = 'XXXXX'
-        flaskApp.config['MYSQL_DATABASE_PASSWORD'] = 'XXXXXXXX'
+        # flaskApp.config['MYSQL_DATABASE_USER'] = 'XXXXX'
+        # flaskApp.config['MYSQL_DATABASE_PASSWORD'] = 'XXXXXXXX'
+        # flaskApp.config['MYSQL_DATABASE_DB'] = 'marin'
+        # flaskApp.config['MYSQL_DATABASE_HOST'] = 'dbp105.prod.marinsw.net'
+
+        flaskApp.config['MYSQL_DATABASE_USER'] = 'marin'
+        flaskApp.config['MYSQL_DATABASE_PASSWORD'] = 'wawptw'
         flaskApp.config['MYSQL_DATABASE_DB'] = 'marin'
-        flaskApp.config['MYSQL_DATABASE_HOST'] = 'dbp105.prod.marinsw.net'
+        flaskApp.config['MYSQL_DATABASE_HOST'] = 'qa2-dbp-lv-103.labs.marinsw.net'
 
         self.mysql.init_app(flaskApp)
 
