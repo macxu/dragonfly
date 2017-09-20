@@ -4,6 +4,7 @@ from app.modules.jenkins.jenkins import Jenkins
 from app.modules.maven import Mavener
 from app.modules.mongo import Mongo
 from app.modules.mysql import MysqlClient
+from app.modules.presto import PrestoClient
 
 app = Flask(__name__)
 mongo = Mongo(app)
@@ -77,7 +78,10 @@ def getDmtMysqlDiscrepancy(client_id):
 @app.route('/api/dmt/presto/<client_id>')
 def getDmtPrestoDiscrepancy(client_id):
 
-    return jsonify({"clientId": client_id})
+    presto = PrestoClient()
+    data = presto.queryDmtCampaignDiscrepancy(client_id)
+
+    return jsonify(data)
 
 @app.route('/dmt')
 def getDmtDiscrepancyPage():

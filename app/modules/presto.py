@@ -26,7 +26,7 @@ class PrestoClient:
         return result.to_dict('records')
 
 
-    def queryDmtCampaignDiscrepancy(self, clientId=4338988):
+    def queryDmtCampaignDiscrepancy(self, clientId):
 
         # if type(clientIds) == str:
         #     clients = clientIds
@@ -87,7 +87,7 @@ if (__name__ == '__main__'):
 
     dbClient = PrestoClient()
 
-    results = dbClient.queryDmtCampaignDiscrepancy()
+    results = dbClient.queryDmtCampaignDiscrepancy(4338988)
     pprint(results)
 
 
