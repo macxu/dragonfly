@@ -23,7 +23,7 @@ class PrestoClient:
         # Return empty  when result is empty, otherwise when result is empty will report error
         result = self.conn.run_query(sql, True)
         # Convert the result from dataframe to list of dictionary
-        return result.T.to_dict()
+        return result.to_dict('records')
 
 
     def queryDmtCampaignDiscrepancy(self, clientIds='4338988'):
@@ -68,8 +68,16 @@ class PrestoClient:
         sql += "campaigns.stts, "
         sql += "campaigns.opstts"
 
-        return self.query(sql)
+        results = self.query(sql)
 
+        return self.convertToMap(results)
+
+    def convertToMap(self, results):
+        map = {}
+        for result in results:
+            key = 'publisherId={};status={};opstatus={}'.format(result['publisher_id'], result['publisher_campaign_status'], result['publisher_campaign_operation_status'])
+            map[key] = result
+        return map
 
 
 if (__name__ == '__main__'):
