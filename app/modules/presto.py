@@ -3,7 +3,7 @@
 __author__    = "Copyright (c) 2017, Marin Software>"
 __copyright__ = "Licensed under GPLv2 or later."
 
-from pypresto import Client
+from pypresto import PrestoConnection
 
 
 class PrestoClient:
@@ -24,12 +24,16 @@ class PrestoClient:
         #
         # self.conn.close()
 
+        host = 'prod-lex-prestocoordinator-lv-1.prod.marinsw.net'
+        user = 'mxu'
+        catalog = 'hive'
+        port = 8080
+        schema = 'prod'
+        password = ''
 
-        client = Client(['prod-lex-prestocoordinator-lv-1.prod.marinsw.net'])
-        with client.connect(catalog='hive', schema="prod", user="mxu") as session:
-            q = session.query('SELECT * FROM campaigns LIMIT 2')
-            for row in q.iter_results():
-                print('%r' % row)
+        conn = PrestoConnection(host, user, catalog, port, schema, password)
+        query = 'select * from campaigns limit 2'
+        results = conn.run_query(query)
 
         sdf = 0
 
