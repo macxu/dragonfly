@@ -10,6 +10,8 @@ from pprint import pprint
 
 from flask import Flask
 
+from app.modules.dcManager import DcManager
+
 class MysqlClient:
 
     def __init__(self, flaskApp=None):
@@ -48,14 +50,14 @@ class MysqlClient:
         if (self.conn):
             self.conn.close()
 
-    def queryDmtCampaignDiscrepancy(self, clientIds='12654910'):
-        clients = ''
-        if type(clientIds) == str:
-            clients = clientIds
-        elif type(clientIds) == list:
-            clients = ','.join(map(str,clientIds))
-        else:
-            return []
+    def queryDmtCampaignDiscrepancy(self, clientId):
+        # clients = ''
+        # if type(clientIds) == str:
+        #     clients = clientIds
+        # elif type(clientIds) == list:
+        #     clients = ','.join(map(str,clientIds))
+        # else:
+        #     return []
 
         sql = ""
         sql += "SELECT pa.client_id, "
@@ -95,7 +97,7 @@ class MysqlClient:
         sql += "JOIN publisher_campaigns pc ON pca.client_account_id = pc.client_account_id "
         sql += "LEFT JOIN google_client_accounts google ON pca.client_account_id = google.google_client_account_id "
         sql += "LEFT JOIN msn_client_accounts msn ON pca.client_account_id = msn.msn_client_account_id "
-        sql += "WHERE pa.client_id IN ({}) ".format(clients)
+        sql += "WHERE pa.client_id IN ({}) ".format(clientId)
         sql += "AND pa.publisher_id IN (4,6) "
         sql += "GROUP BY pa.client_id, "
         sql += "pa.publisher_id, "
