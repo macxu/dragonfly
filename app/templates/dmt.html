@@ -100,20 +100,34 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 </div>
 
 <script>
+        var mysqlData = {};
+        var prestoData = {};
+        var elementMysqlData;
+        var elementPrestoData;
+
+        $(document).ready(function() {
+            elementMysqlData = $("#mysql_data");
+            elementPrestoData = $("#presto_data");
+        });
+
+
+</script>
+
+<script>
     function loadMysqlData() {
+
+        elementMysqlData.val("");
+        mysqlData = {};
+
         var clientId = $("#client_id_10").val();
-
-        var contentElement = $("#mysql_data");
-
         if (clientId == null) {
-            contentElement.val("");
             return;
         }
 
-        $.get( "/api/dmt/mysql/" + clientId, function( mysqlData ) {
-
+        $.get( "/api/dmt/mysql/" + clientId + "/campaign", function( response ) {
+            mysqlData = response;
             var prestoDataString = JSON.stringify(mysqlData, undefined, 2);
-            contentElement.val(prestoDataString);
+            elementMysqlData.val(prestoDataString);
 
         });
     };
@@ -121,19 +135,27 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script>
     function loadPrestoData() {
+
+        elementPrestoData.val("");
+        prestoData = {};
+
         var clientId = $("#client_id_20").val();
-
-        var contentElement = $("#presto_data");
-
         if (clientId == null) {
-            contentElement.val("");
             return;
         }
 
-        $.get( "/api/dmt/presto/" + clientId, function(prestoData) {
+        $.get( "/api/dmt/presto/" + clientId + "/campaign", function(response) {
+            prestoData = response
             var prestoDataString = JSON.stringify(prestoData, undefined, 2);
-            contentElement.val(prestoDataString);
+            elementPrestoData.val(prestoDataString);
         });
+    };
+</script>
+
+<script>
+    function compare() {
+        if (contentElement.val() == "" || ) 
+
     };
 </script>
 

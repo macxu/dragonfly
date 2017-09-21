@@ -70,21 +70,29 @@ def getDcForClient(client_id):
 
     return jsonify({'clientId': client_id, 'fsdfsf': 12323})
 
-@app.route('/api/dmt/mysql/<client_id>')
-def getDmtMysqlDiscrepancy(client_id):
+@app.route('/api/dmt/mysql/<client_id>//<vo>')
+def getDmtMysqlDiscrepancy(client_id, vo):
 
-    data = mysql.queryDmtCampaignDiscrepancy(client_id)
+    data = {}
+    if (vo.lower() == "campaign"):
+        data = mysql.queryDmtCampaignDiscrepancy(client_id)
+    else:
+        print("Unsupported vo type: " + vo)
 
     return jsonify(data)
 
-@app.route('/api/dmt/presto/<client_id>')
-def getDmtPrestoDiscrepancy(client_id):
+@app.route('/api/dmt/presto/<client_id>/<vo>')
+def getDmtPrestoDiscrepancy(client_id, vo):
 
     presto = PrestoClient()
-    data = presto.queryDmtCampaignDiscrepancy(client_id)
+
+    data = {}
+    if (vo.lower() == "campaign"):
+        data = presto.queryDmtCampaignDiscrepancy(client_id)
+    else:
+        print("Unsupported vo type: " + vo)
 
     jsonData = jsonify(data)
-
     pprint(jsonData)
     return jsonData
 
