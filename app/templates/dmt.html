@@ -187,6 +187,16 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         for (var compareItemKey in mysqlData) {
             var createdElements = createAddionPanel(compareItemKey, accordionIndex++);
 
+            var mysqlItems = mysqlData[compareItemKey];
+            var prestoItems = prestoData[compareItemKey];
+            if (prestoItems == null) {
+                prestoItems = {};
+            }
+
+            var rowContainer = createdElements['rowContainer'];
+            for (var column in mysqlItems) {
+                createComparisonRow(rowContainer, column, mysqlItems[column], prestoItems[column]);
+            }
 
             
         }
@@ -228,22 +238,34 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
         return createdElements;
 
-        // var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text("XXXXXXXXXXXXX");
-        // itemRowContainer.append(itemRowMysqlDiv);
-
-        // var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
-        // itemRowContainer.append(itemRowColumnNameDiv);
-
-        // var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text("Count");
-        // itemRowColumnNameDiv.append(itemRowColumnNameButton);
-
-        // var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text("YYYYYYYYY");
-        // itemRowContainer.append(itemRowPrestoDiv);
-
-        // accordionIndex++;
-        // console.log(compareItemKey);
-        
     };
+</script>
+
+<script>
+    function createComparisonRow(parentElement, columnName, mysqlValue, prestoValue) {
+
+        var createdElements = {};
+
+        var itemRowContainer = $("<div></div>").addClass("row");
+        parentElement.append(itemRowContainer);
+
+        var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text(mysqlValue);
+        itemRowContainer.append(itemRowMysqlDiv);
+        createdElements['mysql'] = itemRowMysqlDiv;
+
+        var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
+        itemRowContainer.append(itemRowColumnNameDiv);
+
+        var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text(columnName);
+        itemRowColumnNameDiv.append(itemRowColumnNameButton);
+        createdElements['button'] = itemRowColumnNameButton;
+
+        var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text(prestoValue);
+        itemRowContainer.append(itemRowPrestoDiv);
+        createdElements['presto'] = itemRowPrestoDiv;
+
+        return createdElements;
+    }
 </script>
 
 <script>
