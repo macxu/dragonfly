@@ -74,8 +74,14 @@ def getDcForClient(client_id):
 def getDmtMysqlDiscrepancy(client_id, vo):
 
     data = {}
-    if (vo.lower() == "campaign"):
+    if vo.lower() == "campaign":
         data = mysql.queryDmtDiscrepancyCampaign(client_id)
+    elif vo.lower() == "creative":
+        data = mysql.queryDmtDiscrepancyCreative(client_id)
+    elif vo.lower() == "keyword":
+        data = mysql.queryDmtDiscrepancyKeyword(client_id)
+    elif vo.lower() == "group":
+        data = mysql.queryDmtDiscrepancyGroup(client_id)
     else:
         print("Unsupported vo type: " + vo)
 
@@ -87,8 +93,14 @@ def getDmtPrestoDiscrepancy(client_id, vo):
     presto = PrestoClient()
 
     data = {}
-    if (vo.lower() == "campaign"):
+    if vo.lower() == "campaign":
         data = presto.queryDmtDiscrepancyCampaign(client_id)
+    elif vo.lower() == "creative":
+        data = presto.queryDmtDiscrepancyCreative(client_id)
+    elif vo.lower() == "keyword":
+        data = presto.queryDmtDiscrepancyKeyword(client_id)
+    elif vo.lower() == "group":
+        data = presto.queryDmtDiscrepancyGroup(client_id)
     else:
         print("Unsupported vo type: " + vo)
 
