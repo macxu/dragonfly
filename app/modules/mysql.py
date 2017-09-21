@@ -57,7 +57,7 @@ class MysqlClient:
         if (self.conn):
             self.conn.close()
 
-    def queryDmtCampaignDiscrepancy(self, clientId):
+    def queryDmtDiscrepancyCampaign(self, clientId):
         # clients = ''
         # if type(clientIds) == str:
         #     clients = clientIds
@@ -127,7 +127,7 @@ if (__name__ == '__main__'):
 
     mysqlClient = MysqlClient()
 
-    results = mysqlClient.queryDmtCampaignDiscrepancy(12654910)
+    results = mysqlClient.queryDmtDiscrepancyCampaign(12654910)
     pprint(results)
     mysqlClient.close()
 

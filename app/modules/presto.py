@@ -25,8 +25,7 @@ class PrestoClient:
         # Convert the result from dataframe to list of dictionary
         return result.to_dict('records')
 
-
-    def queryDmtCampaignDiscrepancy(self, clientId):
+    def queryDmtDiscrepancyCampaign(self, clientId):
 
         sql = "SELECT "
         sql += "campaigns.cltid AS client_id, "
@@ -88,7 +87,7 @@ if (__name__ == '__main__'):
 
     dbClient = PrestoClient()
 
-    results = dbClient.queryDmtCampaignDiscrepancy(4338988)
+    results = dbClient.queryDmtDiscrepancyCampaign(4338988)
     pprint(results)
 
 

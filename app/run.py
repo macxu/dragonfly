@@ -75,7 +75,7 @@ def getDmtMysqlDiscrepancy(client_id, vo):
 
     data = {}
     if (vo.lower() == "campaign"):
-        data = mysql.queryDmtCampaignDiscrepancy(client_id)
+        data = mysql.queryDmtDiscrepancyCampaign(client_id)
     else:
         print("Unsupported vo type: " + vo)
 
@@ -88,7 +88,7 @@ def getDmtPrestoDiscrepancy(client_id, vo):
 
     data = {}
     if (vo.lower() == "campaign"):
-        data = presto.queryDmtCampaignDiscrepancy(client_id)
+        data = presto.queryDmtDiscrepancyCampaign(client_id)
     else:
         print("Unsupported vo type: " + vo)
 
