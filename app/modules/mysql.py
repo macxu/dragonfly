@@ -57,6 +57,16 @@ class MysqlClient:
         if (self.conn):
             self.conn.close()
 
+    def queryDmtDiscrepancyGroup(self, clientId):
+        pass
+
+    def queryDmtDiscrepancyKeyword(self, clientId):
+        pass
+
+    def queryDmtDiscrepancyCreative(self, clientId):
+        pass
+
+
     def queryDmtDiscrepancyCampaign(self, clientId):
         # clients = ''
         # if type(clientIds) == str:

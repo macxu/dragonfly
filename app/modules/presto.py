@@ -25,6 +25,19 @@ class PrestoClient:
         # Convert the result from dataframe to list of dictionary
         return result.to_dict('records')
 
+
+    def queryDmtDiscrepancyGroup(self, clientId):
+        pass
+
+
+    def queryDmtDiscrepancyKeyword(self, clientId):
+        pass
+
+
+    def queryDmtDiscrepancyCreative(self, clientId):
+        pass
+
+
     def queryDmtDiscrepancyCampaign(self, clientId):
 
         sql = "SELECT "
