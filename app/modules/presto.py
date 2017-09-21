@@ -68,7 +68,7 @@ class PrestoClient:
     def convertToMap(self, results):
         map = {}
         for result in results:
-            key = 'publisherId={} status={} opstatus={}'.format(
+            key = 'publisherId={}; status={}; opstatus={}'.format(
                 result['publisher_id'],
                 result['publisher_campaign_status'],
                 result['publisher_campaign_operation_status'])

@@ -70,7 +70,7 @@ def getDcForClient(client_id):
 
     return jsonify({'clientId': client_id, 'fsdfsf': 12323})
 
-@app.route('/api/dmt/mysql/<client_id>//<vo>')
+@app.route('/api/dmt/mysql/<client_id>/<vo>')
 def getDmtMysqlDiscrepancy(client_id, vo):
 
     data = {}
