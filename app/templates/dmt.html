@@ -183,60 +183,66 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             return;
         }
 
-        var elementCompareCategory = $('#accordion');
-
         var accordionIndex = 1;
         for (var compareItemKey in mysqlData) {
+            var createdElements = createAddionPanel(compareItemKey, accordionIndex++);
+
+
             
-            var rootDiv = $("<div></div>").addClass("panel panel-default");
-            elementCompareCategory.append(rootDiv);
-
-            var panelHeadingDiv = $("<div></div>").addClass("panel-heading");
-            rootDiv.append(panelHeadingDiv);
-
-            var panelTitleDiv = $("<h4></h4").addClass("panel-title");
-            panelHeadingDiv.append(panelTitleDiv);
-
-            var linkElement = $("<a></a>").attr("data-toggle", "collapse")
-                                            .attr("data-parent", "#accordion")
-                                            .attr("href", "#collapse" + accordionIndex)
-                                            .text(compareItemKey);
-            panelTitleDiv.append(linkElement);
-
-            var bodyRootDiv = $("<div></div>").addClass("panel-collapse collapse in").attr("id", "collapse" + accordionIndex);
-            rootDiv.append(bodyRootDiv);
-
-            //<div class="panel-body text-center">
-            var panelBody = $("<div></div>").addClass("panel-body text-center");
-            bodyRootDiv.append(panelBody);
-
-            var mysqlItems = mysqlData[compareItemKey];
-            var prestoItems = prestoData[compareItemKey];
-
-            // below is for each comparison key like object_count
-            var itemRowContainer = $("<div></div>").addClass("row");
-            panelBody.append(itemRowContainer);
-
-            var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text("XXXXXXXXXXXXX");
-            itemRowContainer.append(itemRowMysqlDiv);
-
-            var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
-            itemRowContainer.append(itemRowColumnNameDiv);
-
-            var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text("Count");
-            itemRowColumnNameDiv.append(itemRowColumnNameButton);
-
-            var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text("YYYYYYYYY");
-            itemRowContainer.append(itemRowPrestoDiv);
-
-            accordionIndex++;
-            console.log(compareItemKey);
         }
+    };
+</script>
 
-        // //<li class="list-group-item list-group-item-success">First item</li>
-        // var newLI = $("<li></li>").addClass("list-group-item list-group-item-success").text("sfasfasdf");
-        // elementCompareCategory.append(newLI);
+<script>
+    function createAddionPanel(title, accordionIndex) {
 
+        var createdElements = {};
+
+        var rootDiv = $("<div></div>").addClass("panel panel-default");
+        $('#accordion').append(rootDiv);
+
+        var panelHeadingDiv = $("<div></div>").addClass("panel-heading");
+        rootDiv.append(panelHeadingDiv);
+
+        var panelTitleDiv = $("<h4></h4").addClass("panel-title");
+        panelHeadingDiv.append(panelTitleDiv);
+
+        var linkElement = $("<a></a>").attr("data-toggle", "collapse")
+                                        .attr("data-parent", "#accordion")
+                                        .attr("href", "#collapse" + accordionIndex)
+                                        .text(title);
+        panelTitleDiv.append(linkElement);
+        createdElements['title'] = linkElement;
+
+        var bodyRootDiv = $("<div></div>").addClass("panel-collapse collapse in").attr("id", "collapse" + accordionIndex);
+        rootDiv.append(bodyRootDiv);
+
+        //<div class="panel-body text-center">
+        var panelBody = $("<div></div>").addClass("panel-body text-center");
+        bodyRootDiv.append(panelBody);
+
+        // below is for each comparison key like object_count
+        var itemRowContainer = $("<div></div>").addClass("row");
+        panelBody.append(itemRowContainer);
+        createdElements['rowContainer'] = itemRowContainer;
+
+        return createdElements;
+
+        // var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text("XXXXXXXXXXXXX");
+        // itemRowContainer.append(itemRowMysqlDiv);
+
+        // var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
+        // itemRowContainer.append(itemRowColumnNameDiv);
+
+        // var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text("Count");
+        // itemRowColumnNameDiv.append(itemRowColumnNameButton);
+
+        // var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text("YYYYYYYYY");
+        // itemRowContainer.append(itemRowPrestoDiv);
+
+        // accordionIndex++;
+        // console.log(compareItemKey);
+        
     };
 </script>
 
