@@ -98,102 +98,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                                 <div class="row panel panel-default">
                                     <div class="col-sm-12">
                                         <div class="row panel panel-default" style="height:100%">
-                                            <ul class="list-group" id="ul-compareKeyGroup">
+                                            <ul class="list-group">
                                                 <div class="panel-group" id="accordion">
-
-                                                    <div class="panel panel-default">
-                                                      <div class="panel-heading">
-                                                        <h4 class="panel-title">
-                                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Publisher=4; Status=Active; OpStatus=SYNC</a>
-                                                        </h4>
-                                                      </div>
-                                                      <div id="collapse1" class="panel-collapse collapse in">
-                                                        <div class="panel-body text-center">
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                        </div>
-                                                      </div>
-                                                    </div>
-
-                                                    <div class="panel panel-default">
-                                                      <div class="panel-heading">
-                                                        <h4 class="panel-title">
-                                                          <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Publisher=4; Status=Active; OpStatus=SYNCED</a>
-                                                        </h4>
-                                                      </div>
-                                                      <div id="collapse2" class="panel-collapse collapse">
-
-                                                          <div class="panel-body text-center">
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-xs-4">123</div>
-                                                                <div class="col-xs-4">
-                                                                    <button type="button" class="btn btn-primary btn-block">Count</button>
-                                                                </div>
-                                                                <div class="col-xs-4">123</div>
-                                                            </div>
-
-                                                        </div>
-
-                                                      </div>
-                                                    </div>
-
-                                                  </div>
+                                                </div>
                                             </ul>
                                         </div>
                                     </div>
@@ -276,12 +183,66 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             return;
         }
 
-        var elementCompareCategory = $('#ul-compareKeyGroup');
+        var accordionIndex = 1;
+        for (var compareItemKey in mysqlData) {
+            var createdElements = createAddionPanel(compareItemKey, accordionIndex++);
 
-        //<li class="list-group-item list-group-item-success">First item</li>
-        var newLI = $("<li></li>").addClass("list-group-item list-group-item-success").text("sfasfasdf");
-        elementCompareCategory.append(newLI);
 
+            
+        }
+    };
+</script>
+
+<script>
+    function createAddionPanel(title, accordionIndex) {
+
+        var createdElements = {};
+
+        var rootDiv = $("<div></div>").addClass("panel panel-default");
+        $('#accordion').append(rootDiv);
+
+        var panelHeadingDiv = $("<div></div>").addClass("panel-heading");
+        rootDiv.append(panelHeadingDiv);
+
+        var panelTitleDiv = $("<h4></h4").addClass("panel-title");
+        panelHeadingDiv.append(panelTitleDiv);
+
+        var linkElement = $("<a></a>").attr("data-toggle", "collapse")
+                                        .attr("data-parent", "#accordion")
+                                        .attr("href", "#collapse" + accordionIndex)
+                                        .text(title);
+        panelTitleDiv.append(linkElement);
+        createdElements['title'] = linkElement;
+
+        var bodyRootDiv = $("<div></div>").addClass("panel-collapse collapse in").attr("id", "collapse" + accordionIndex);
+        rootDiv.append(bodyRootDiv);
+
+        //<div class="panel-body text-center">
+        var panelBody = $("<div></div>").addClass("panel-body text-center");
+        bodyRootDiv.append(panelBody);
+
+        // below is for each comparison key like object_count
+        var itemRowContainer = $("<div></div>").addClass("row");
+        panelBody.append(itemRowContainer);
+        createdElements['rowContainer'] = itemRowContainer;
+
+        return createdElements;
+
+        // var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text("XXXXXXXXXXXXX");
+        // itemRowContainer.append(itemRowMysqlDiv);
+
+        // var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
+        // itemRowContainer.append(itemRowColumnNameDiv);
+
+        // var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text("Count");
+        // itemRowColumnNameDiv.append(itemRowColumnNameButton);
+
+        // var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text("YYYYYYYYY");
+        // itemRowContainer.append(itemRowPrestoDiv);
+
+        // accordionIndex++;
+        // console.log(compareItemKey);
+        
     };
 </script>
 
