@@ -179,6 +179,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
 <script>
     function compare() {
+
+        $('#accordion').empty();
+
         if ($.isEmptyObject(mysqlData) || $.isEmptyObject(prestoData)) {
             return;
         }
@@ -193,7 +196,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 prestoItems = {};
             }
 
-            var rowContainer = createdElements['rowContainer'];
+            var rowContainer = createdElements['tableBody'];
             for (var column in mysqlItems) {
                 createComparisonRow(rowContainer, column, mysqlItems[column], prestoItems[column]);
             }
@@ -216,7 +219,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             var mysqlItems = {};
             var prestoItems = prestoData[compareItemKey];
 
-            var rowContainer = createdElements['rowContainer'];
+            var rowContainer = createdElements['tableBody'];
             for (var column in prestoItems) {
                 createComparisonRow(rowContainer, column, "", prestoItems[column]);
             }
@@ -259,35 +262,46 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         panelBody.append(itemRowContainer);
         createdElements['rowContainer'] = itemRowContainer;
 
+        var table = $("<table></table>").addClass("table table-bordered");
+        itemRowContainer.append(table);
+
+        var tableHead = $('<thead><tr><th>1.0 (Mysql)</th><th>Field</th><th>2.0 (Presto)</th></tr></thead>');
+        table.append(tableHead);
+
+        var tableBody = $('<tbody></tbody');
+        table.append(tableBody);
+        createdElements['tableBody'] = tableBody;
+
         return createdElements;
 
     };
 </script>
 
 <script>
-    function createComparisonRow(parentElement, columnName, mysqlValue, prestoValue) {
+    function createComparisonRow(tableBody, columnName, mysqlValue, prestoValue) {
 
         var createdElements = {};
 
-        var itemRowContainer = $("<div></div>").addClass("row");
-        parentElement.append(itemRowContainer);
+        var tr = $("<tr></tr>");
+        tableBody.append(tr);
 
-        var itemRowMysqlDiv = $("<div></div>").addClass("col-xs-4 text-right").text(mysqlValue);
-        itemRowContainer.append(itemRowMysqlDiv);
-        createdElements['mysql'] = itemRowMysqlDiv;
+        var tdMysql = $("<td></td>").text(mysqlValue);
+        var tdFieldName = $("<td></td>").text(columnName);
+        var tdPresto = $("<td></td>").text(prestoValue);
 
-        var itemRowColumnNameDiv = $("<div></div>").addClass("col-xs-4");
-        itemRowContainer.append(itemRowColumnNameDiv);
+        tr.append(tdMysql);
+        tr.append(tdFieldName);
+        tr.append(tdPresto);
 
-        var itemRowColumnNameButton = $("<button></button>").attr("type", "button").addClass("btn btn-primary btn-block").text(columnName);
-        itemRowColumnNameDiv.append(itemRowColumnNameButton);
-        createdElements['button'] = itemRowColumnNameButton;
+        if (mysqlValue == null || prestoValue == null) {
+            return;
+        }
 
-        var itemRowPrestoDiv = $("<div></div>").addClass("col-xs-4 text-left").text(prestoValue);
-        itemRowContainer.append(itemRowPrestoDiv);
-        createdElements['presto'] = itemRowPrestoDiv;
-
-        return createdElements;
+        if (mysqlValue == prestoValue) {
+            tr.addClass("success");
+        } else {
+            tr.addClass("danger");
+        }
     }
 </script>
 
