@@ -198,8 +198,31 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                 createComparisonRow(rowContainer, column, mysqlItems[column], prestoItems[column]);
             }
 
-            
+            for (var column in prestoItems) {
+                if ( !(column in mysqlItems)) {
+                    createComparisonRow(rowContainer, column, mysqlItems[column], prestoItems[column]);
+                }
+            } 
         }
+
+        for (var compareItemKey in prestoData) {
+
+            if (compareItemKey in mysqlData) {
+                continue;
+            }
+
+            var createdElements = createAddionPanel(compareItemKey, accordionIndex++);
+
+            var mysqlItems = {};
+            var prestoItems = prestoData[compareItemKey];
+
+            var rowContainer = createdElements['rowContainer'];
+            for (var column in prestoItems) {
+                createComparisonRow(rowContainer, column, "", prestoItems[column]);
+            }
+
+        }
+
     };
 </script>
 
