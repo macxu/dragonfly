@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="dragonflyJenkinsApp">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -21,12 +21,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
 
     <script src="/static/js/bootstrap.min.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-    <script src="/static/js/echarts.min.js"></script>
-
 </head>
 
-<body ng-controller="dragonflyJenkinsController">
+<body>
 <div id="wrapper-wide">
     <!-- Navigation-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -47,20 +44,39 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                             <div class="panel-body">
 
                                 <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="dropdown">
-                                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Select Clients
-                                            <span class="caret"></span></button>
-                                            <ul class="dropdown-menu">
-                                              <li class="dropdown-header">Norton</li>
-                                              <li><a href="#">HTML</a></li>
-                                              <li><a href="#">CSS</a></li>
-                                              <li><a href="#">JavaScript</a></li>
-                                              <li class="divider"></li>
-                                              <li class="dropdown-header">Dropdown header 2</li>
-                                              <li><a href="#">About Us</a></li>
-                                            </ul>
-                                          </div>
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-8">
+                                                <input type="text" class="form-control" id="client_id_10" value="12654910">
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <button type="button" class="btn btn-primary" onclick="loadMysqlData()">Get 1.0 Data by client ID</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="row panel panel-default">
+                                            <div class="form-group">
+                                              <textarea class="form-control" rows="30" id="mysql_data"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-xs-6">
+                                        <div class="row">
+                                            <div class="col-xs-8">
+                                                <input type="text" class="form-control" id="client_id_20" value="4338988">
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <button type="button" class="btn btn-primary" onclick="loadPrestoData()">Get 2.0 Data by client ID</button>
+                                            </div>
+                                        </div>
+
+                                         <div class="row panel panel-default">
+                                            <div class="form-group">
+                                              <textarea class="form-control" rows="30" id="presto_data"></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -83,18 +99,42 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
     </div>
 </div>
 
-<script src="/static/angular/modules/dragonflyJenkinsApp.js"></script>
-<script src="/static/angular/controllers/dragonflyJenkinsController.js"></script>
-
 <script>
-    $(document).ready(function() {
-        $.get( "/api/mongo/releases_stats", function( releaseDatas ) {
+    function loadMysqlData() {
+        var clientId_10 = $("#client_id_10").val();
 
+        var contentElement = $("#mysql_data_10");
+
+        if (clientId_10 == null) {
+            contentElement.val("");
+            return;
+        }
+
+        $.get( "/api/dmt/mysql/" + clientId_10, function( mysqlData ) {
+
+            contentElement.val(mysqlData);
 
         });
-    });
+    };
 </script>
 
+<script>
+    function loadPrestoData() {
+        var clientId = $("#client_id_20").val();
+
+        var contentElement = $("#presto_data");
+
+        if (clientId == null) {
+            contentElement.val("");
+            return;
+        }
+
+        $.get( "/api/dmt/presto/" + clientId, function(prestoData) {
+            var prestoDataString = JSON.stringify(prestoData, undefined, 2);
+            contentElement.val(prestoDataString);
+        });
+    };
+</script>
 
 </body>
 </html>

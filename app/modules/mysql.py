@@ -111,7 +111,7 @@ class MysqlClient:
     def convertToMap(self, results):
         map = {}
         for result in results:
-            key = 'publisherId={}; status={}; opstatus={}'.format(
+            key = 'publisherId={} status={} opstatus={}'.format(
                 result['publisher_id'], result['status'], result['operational_status'])
             map[key] = result
         return map

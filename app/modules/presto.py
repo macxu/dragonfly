@@ -28,13 +28,6 @@ class PrestoClient:
 
     def queryDmtCampaignDiscrepancy(self, clientId):
 
-        # if type(clientIds) == str:
-        #     clients = clientIds
-        # elif type(clientIds) == list:
-        #     clients = ','.join(map(str, clientIds))
-        # else:
-        #     return []
-
         sql = "SELECT "
         sql += "campaigns.cltid AS client_id, "
         sql += "campaigns.pubid AS publisher_id, "
@@ -75,11 +68,19 @@ class PrestoClient:
     def convertToMap(self, results):
         map = {}
         for result in results:
-            key = 'publisherId={}; status={}; opstatus={}'.format(
+            key = 'publisherId={} status={} opstatus={}'.format(
                 result['publisher_id'],
                 result['publisher_campaign_status'],
                 result['publisher_campaign_operation_status'])
+
+            # scan the result, if there is any value of "nan", change it to None
+            # otherwise we cannot see the result by JQuery, even we can see the result in browser.
+            for propertyKey in result:
+                if (str(result[propertyKey]) == 'nan'):
+                    result[propertyKey] = None
+
             map[key] = result
+
         return map
 
 

@@ -6,6 +6,8 @@ from app.modules.mongo import Mongo
 from app.modules.mysql import MysqlClient
 from app.modules.presto import PrestoClient
 
+from pprint import pprint
+
 app = Flask(__name__)
 mongo = Mongo(app)
 mysql = MysqlClient(app)
@@ -66,7 +68,7 @@ def getTestDefinitions():
 @app.route('/api/dc/<client_id>')
 def getDcForClient(client_id):
 
-    return jsonify({"clientId": client_id})
+    return jsonify({'clientId': client_id, 'fsdfsf': 12323})
 
 @app.route('/api/dmt/mysql/<client_id>')
 def getDmtMysqlDiscrepancy(client_id):
@@ -81,7 +83,10 @@ def getDmtPrestoDiscrepancy(client_id):
     presto = PrestoClient()
     data = presto.queryDmtCampaignDiscrepancy(client_id)
 
-    return jsonify(data)
+    jsonData = jsonify(data)
+
+    pprint(jsonData)
+    return jsonData
 
 @app.route('/dmt')
 def getDmtDiscrepancyPage():
