@@ -37,81 +37,70 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         <div class="container-fluid" id="divContainer">
             <!-- Page Heading-->
 
-            <div class="row">
-                <div class="panel panel-default">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-
-                                <div class="row panel panel-default">
-                                    <div class="col-sm-12">
-                                        <div class="row" style="height:100%">
-                                            <form>
-                                                <div class="radio text-center">
-                                                    <label><input id="vo_campaign" type="radio" name="optradio" checked="checked" onchange="selectedVoTypeChanged()"> Campaign </label>
-                                                    <label><input id="vo_group" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Group </label>
-                                                    <label><input id="vo_keyword" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Keyword </label>
-                                                    <label><input id="vo_creative" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Creative </label>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row panel panel-default">
-                                    <div class="col-xs-6">
-                                        <div class="row panel panel-default">
-                                            <div class="col-xs-8">
-                                                <input type="text" class="form-control" id="client_id_10" value="12654910">
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <button type="button" class="btn btn-primary" onclick="loadMysqlData()">Get 1.0 Data by client ID</button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row panel panel-default">
-                                            <div class="form-group">
-                                              <textarea class="form-control" rows="20" id="mysql_data"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-xs-6">
-                                        <div class="row panel panel-default">
-                                            <div class="col-xs-8">
-                                                <input type="text" class="form-control" id="client_id_20" value="4338988">
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <button type="button" class="btn btn-primary" onclick="loadPrestoData()">Get 2.0 Data by client ID</button>
-                                            </div>
-                                        </div>
-
-                                         <div class="row panel panel-default">
-                                            <div class="form-group">
-                                              <textarea class="form-control" rows="20" id="presto_data"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row panel panel-default">
-                                    <div class="col-sm-12">
-                                        <div class="row panel panel-default" style="height:100%">
-                                            <ul class="list-group">
-                                                <div class="panel-group" id="accordion">
-                                                </div>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
+            <div class="row panel panel-default">
+                <div class="col-sm-12">
+                    <div class="row" style="height:100%">
+                        <form>
+                            <div class="radio text-center">
+                                <label><input id="vo_campaign" type="radio" name="optradio" checked="checked" onchange="selectedVoTypeChanged()"> Campaign </label>
+                                <label><input id="vo_group" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Group </label>
+                                <label><input id="vo_keyword" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Keyword </label>
+                                <label><input id="vo_creative" type="radio" name="optradio" onchange="selectedVoTypeChanged()"> Creative </label>
                             </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row panel panel-default">
+                <div class="col-xs-6">
+                    <div class="row panel panel-default">
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" id="client_id_10" value="12654910">
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="button" class="btn btn-primary" onclick="loadMysqlData()">Get 1.0 Data by client ID</button>
+                        </div>
+                    </div>
+
+                    <div class="row panel panel-default">
+                        <div class="form-group">
+                          <textarea class="form-control" rows="20" id="mysql_data"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xs-6">
+                    <div class="row panel panel-default">
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" id="client_id_20" value="4338988">
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="button" class="btn btn-primary" onclick="loadPrestoData()">Get 2.0 Data by client ID</button>
+                        </div>
+                    </div>
+
+                     <div class="row panel panel-default">
+                        <div class="form-group">
+                          <textarea class="form-control" rows="20" id="presto_data"></textarea>
                         </div>
                     </div>
                 </div>
             </div>
 
+
+            <div class="row panel panel-default">
+                <div class="col-sm-12">
+                    <div class="row panel panel-default" style="height:100%">
+                        <ul class="list-group">
+                            <div class="panel-group" id="accordion">
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
 
         </div>
