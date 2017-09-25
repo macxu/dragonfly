@@ -87,6 +87,26 @@ def getDmtMysqlDiscrepancy(client_id, vo):
 
     return jsonify(data)
 
+
+@app.route('/api/clients/mysql/<client_id>')
+def getClientName10(client_id):
+
+    data = mysql.getClientName(client_id)
+
+    jsonData = jsonify(data)
+    pprint(jsonData)
+    return jsonData
+
+@app.route('/api/clients/presto/<client_id>')
+def getClientName20(client_id):
+
+    presto = PrestoClient()
+    data = presto.getClientName(client_id)
+
+    jsonData = jsonify(data)
+    pprint(jsonData)
+    return jsonData
+
 @app.route('/api/dmt/presto/<client_id>/<vo>')
 def getDmtPrestoDiscrepancy(client_id, vo):
 
