@@ -169,6 +169,10 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             yAxis: {
                 type: 'category',
                 data: jobNames,
+                axisLabel:{
+                // Fix the issue that some job names were not shown on the y axis
+                    interval:0,
+                },
                 labelFontStyle: "arial",
                 labelFontSize: 20,
             },
