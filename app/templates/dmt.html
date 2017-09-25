@@ -85,7 +85,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     <div class="col-md-12">
                         <div class="input-group">
                             <span class="input-group-addon">Client Name</span>
-                            <input class="form-control" id="client_name_10" value="" placeholder="">
+                            <input class="form-control" id="client_name_10" value="" placeholder="" readonly>
                         </div>
                     </div>
                 </div>
@@ -97,7 +97,7 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
                     <div class="col-md-12">
                         <div class="input-group">
                             <span class="input-group-addon">Client Name</span>
-                            <input class="form-control" id="client_name_20" value="" placeholder="">
+                            <input class="form-control" id="client_name_20" value="" placeholder="" readonly>
                         </div>
                     </div>
                 </div>
@@ -142,6 +142,9 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
         $(document).ready(function() {
             elementMysqlData = $("#mysql_data");
             elementPrestoData = $("#presto_data");
+
+            element_client_name_10 = $("#client_name_10");
+            element_client_name_20 = $("#client_name_20");
         });
 
 
@@ -166,6 +169,11 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             compare();
 
         });
+
+        $.get( "api/clients/mysql/" + clientId, function( clientData ) {
+            clientName = clientData['client_name'];
+            element_client_name_10.val(clientName);
+        });
     };
 </script>
 
@@ -186,6 +194,11 @@ script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')--><!--
             elementPrestoData.val(prestoDataString);
 
             compare();
+        });
+
+        $.get( "api/clients/presto/" + clientId, function( clientData ) {
+            clientName = clientData['client_name'];
+            element_client_name_20.val(clientName);
         });
     };
 </script>
