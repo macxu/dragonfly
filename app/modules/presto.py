@@ -63,7 +63,10 @@ class PrestoClient:
         sql += "g.stts, "
         sql += "g.opStts"
 
-        return self.query(sql)
+        queryResults = self.query(sql)
+        dmtResults = self.buildDmtMap(queryResults)
+
+        return dmtResults
 
     def queryDmtDiscrepancyKeyword(self, clientId):
 
@@ -103,9 +106,10 @@ class PrestoClient:
         sql += "k.stts, "
         sql += "k.opStts"
 
-        return self.query(sql)
+        queryResults = self.query(sql)
+        dmtResults = self.buildDmtMap(queryResults)
 
-
+        return dmtResults
 
 
     def queryDmtDiscrepancyCreative(self, clientId):
@@ -145,7 +149,10 @@ class PrestoClient:
         sql += "cr.stts, "
         sql += "cr.opStts"
 
-        return self.query(sql)
+        queryResults = self.query(sql)
+        dmtResults = self.buildDmtMap(queryResults)
+
+        return dmtResults
 
 
     def queryDmtDiscrepancyCampaign(self, clientId):
@@ -183,11 +190,28 @@ class PrestoClient:
         sql += "campaigns.stts, "
         sql += "campaigns.opstts"
 
-        return self.query(sql)
+        queryResults = self.query(sql)
+        dmtResults = self.buildDmtMap(queryResults)
+
+        return dmtResults
 
 
+    def getClientName(self, clientId):
+        sql = "SELECT "
+        sql += "clients.nme AS client_name "
 
-    def convertToMap(self, results):
+        sql += "FROM clients "
+        sql += "WHERE clients.id=%s " % clientId
+
+        results =  self.query(sql)
+        if (len(results) == 0) :
+            return {"client_name": "CLIENT_NOT_FOUND"}
+
+        return results[0]
+
+
+    def buildDmtMap(self, results):
+
         map = {}
         for result in results:
             key = 'publisherId={}; status={}; opstatus={}'.format(
@@ -195,20 +219,30 @@ class PrestoClient:
                 result['status'],
                 result['operational_status'])
 
+            map[key] = result
+
+        return map
+
+
+    def convertToMap(self, results):
+
+        for result in results:
+
             # scan the result, if there is any value of "nan", change it to None
             # otherwise we cannot see the result by JQuery, even we can see the result in browser.
             for propertyKey in result:
                 if (str(result[propertyKey]) == 'nan'):
                     result[propertyKey] = None
 
-            map[key] = result
-
-        return map
+        return results
 
 
 if (__name__ == '__main__'):
 
     dbClient = PrestoClient()
+
+    results = dbClient.getClientName(4338988)
+    pprint(results)
 
     results = dbClient.queryDmtDiscrepancyCampaign(4338988)
     pprint(results)
