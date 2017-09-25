@@ -51,7 +51,7 @@ class MysqlClient:
                 if type(value) == Decimal:
                     record[key] = float(value)
 
-        return self.convertToMap(fetchResult)
+        return fetchResult
 
     def close(self):
         if (self.conn):
@@ -109,7 +109,7 @@ class MysqlClient:
         sql += "pg.publisher_group_status, "
         sql += "pg.publisher_group_operation_status; "
 
-        return self.query(sql)
+        return self.buildDmtMap(self.query(sql))
 
 
     def queryDmtDiscrepancyKeyword(self, clientId):
@@ -167,7 +167,7 @@ class MysqlClient:
         sql += "k.keyword_status, "
         sql += "k.keyword_operation_status "
 
-        return self.query(sql)
+        return self.buildDmtMap(self.query(sql))
 
 
     def queryDmtDiscrepancyCreative(self, clientId):
@@ -218,7 +218,7 @@ class MysqlClient:
         sql += "c.creative_status, "
         sql += "c.publisher_creative_operation_status; "
 
-        return self.query(sql)
+        return self.buildDmtMap(self.query(sql))
 
 
 
@@ -269,11 +269,10 @@ class MysqlClient:
         sql += "pc.publisher_campaign_status,"
         sql += "pc.publisher_campaign_operation_status;"
 
-        return self.query(sql)
+        return self.buildDmtMap(self.query(sql))
 
 
-
-    def convertToMap(self, results):
+    def buildDmtMap(self, results):
         map = {}
         for result in results:
             key = 'publisherId={}; status={}; opstatus={}'.format(
@@ -281,9 +280,25 @@ class MysqlClient:
             map[key] = result
         return map
 
+    def getClientName(self, clientId):
+        sql = ""
+        sql += "SELECT client_name "
+        sql += "FROM clients "
+
+        sql += "WHERE client_id=%s " % clientId
+
+        results = self.query(sql)
+        if (len(results) == 0) :
+            return {"client_name": "CLIENT_NOT_FOUND"}
+
+        return results[0]
+
 if (__name__ == '__main__'):
 
     mysqlClient = MysqlClient()
+
+    results = mysqlClient.getClientName(12654910)
+    pprint(results)
 
     results = mysqlClient.queryDmtDiscrepancyCampaign(12654910)
     pprint(results)
